@@ -138,8 +138,18 @@ const Tasks = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="flex items-center justify-between"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
           <p className="text-gray-600 mt-1">Manage and track tasks</p>
@@ -149,11 +159,11 @@ const Tasks = () => {
             onClick={() => setShowModal(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            <FiPlus />
-            <span>New Task</span>
-          </button>
+          <FiPlus />
+          <span>New Task</span>
+        </button>
         )}
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         {tasks.map((task, index) => (

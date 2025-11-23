@@ -244,18 +244,10 @@ const Materials = () => {
                   : ''
               }`}
             >
-            <div
-              key={item.id}
-              className={`bg-white rounded-lg shadow-sm p-6 ${
-                parseFloat(item.quantity) <= parseFloat(item.min_threshold)
-                  ? 'border-2 border-red-300'
-                  : ''
-              }`}
-            >
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">{item.material_name}</h3>
-                  {parseFloat(item.quantity) <= parseFloat(item.min_threshold) && (
+                  <h3 className="text-lg font-bold text-gray-900">{item.material_name || 'Unknown Material'}</h3>
+                  {parseFloat(item.quantity || 0) <= parseFloat(item.min_threshold || 0) && (
                     <div className="flex items-center text-red-600 text-sm mt-1">
                       <FiAlertCircle className="mr-1" />
                       Low Stock
@@ -267,17 +259,17 @@ const Materials = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Quantity:</span>
                   <span className="font-bold text-gray-900">
-                    {parseFloat(item.quantity).toFixed(2)} {item.unit}
+                    {parseFloat(item.quantity || 0).toFixed(2)} {item.unit || ''}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Min Threshold:</span>
                   <span className="text-gray-900">
-                    {parseFloat(item.min_threshold).toFixed(2)} {item.unit}
+                    {parseFloat(item.min_threshold || 0).toFixed(2)} {item.unit || ''}
                   </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
