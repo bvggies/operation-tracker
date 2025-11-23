@@ -35,6 +35,30 @@ app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/audit', require('./routes/audit'));
 
+// Root route - works on both local and Vercel
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Operations Tracker API',
+    version: '1.0.0',
+    status: 'running',
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      users: '/api/users',
+      projects: '/api/projects',
+      tasks: '/api/tasks',
+      materials: '/api/materials',
+      equipment: '/api/equipment',
+      attendance: '/api/attendance',
+      reports: '/api/reports',
+      notifications: '/api/notifications',
+      documents: '/api/documents',
+      audit: '/api/audit'
+    }
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Operations Tracker API is running' });
