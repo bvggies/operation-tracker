@@ -73,12 +73,14 @@ const Projects = () => {
   const fetchSupervisors = async () => {
     try {
       const response = await api.get('/users');
-      const supervisorsList = response.data.filter(
-        (u) => ['admin', 'manager', 'supervisor'].includes(u.role) && u.active
+      const usersData = Array.isArray(response.data) ? response.data : [];
+      const supervisorsList = usersData.filter(
+        (u) => u && u.role && ['admin', 'manager', 'supervisor'].includes(u.role) && u.active
       );
       setSupervisors(supervisorsList);
     } catch (error) {
       console.error('Error fetching supervisors:', error);
+      setSupervisors([]);
     }
   };
 
