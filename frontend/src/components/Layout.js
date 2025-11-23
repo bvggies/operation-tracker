@@ -147,7 +147,7 @@ const Layout = ({ children }) => {
               </div>
             )}
           </div>
-        </aside>
+        </motion.aside>
 
         {/* Overlay for mobile */}
         {sidebarOpen && (

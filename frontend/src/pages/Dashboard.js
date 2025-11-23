@@ -200,13 +200,13 @@ const Dashboard = () => {
                   >
                     {task.status ? task.status.replace('_', ' ') : 'Unknown'}
                   </span>
-                </div>
+                </motion.div>
               ))
             ) : (
               <p className="text-gray-500 text-center py-4">No recent tasks</p>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Recent Activities */}
