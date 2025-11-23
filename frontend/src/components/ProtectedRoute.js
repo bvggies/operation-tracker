@@ -6,7 +6,14 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -17,7 +24,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
