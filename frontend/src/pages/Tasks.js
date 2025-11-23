@@ -163,7 +163,7 @@ const Tasks = () => {
           <span>New Task</span>
         </button>
         )}
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 gap-4">
         {tasks.map((task, index) => (
