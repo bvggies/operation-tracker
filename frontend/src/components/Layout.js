@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +24,21 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+      // On desktop, always show sidebar
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      }
+    };
+    
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -70,7 +85,7 @@ const Layout = ({ children }) => {
         <motion.aside
           initial={false}
           animate={{
-            x: sidebarOpen ? 0 : -256,
+            x: isDesktop ? 0 : (sidebarOpen ? 0 : -256),
           }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg"
