@@ -127,9 +127,9 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {statCards && statCards.length > 0 ? (
+        {statCards && Array.isArray(statCards) && statCards.length > 0 ? (
           statCards.map((stat, index) => {
-            if (!stat || !stat.icon) return null;
+            if (!stat || !stat.icon || typeof stat.icon !== 'function') return null;
             const Icon = stat.icon;
             return (
               <motion.div
@@ -149,7 +149,7 @@ const Dashboard = () => {
                       <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value ?? 0}</p>
                     </div>
                     <div className={`${stat.color || 'bg-gray-500'} p-4 rounded-lg`}>
-                      <Icon className="text-white" size={24} />
+                      {Icon ? <Icon className="text-white" size={24} /> : null}
                     </div>
                   </div>
                 </Link>

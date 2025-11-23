@@ -32,17 +32,17 @@ const Projects = () => {
   });
 
   useEffect(() => {
-    if (user && (isAdmin() || isManager()) && selectedProject) {
+    if (user && isAdmin && isManager && selectedProject && (isAdmin() || isManager())) {
       fetchSites(selectedProject.id);
     }
-  }, [selectedProject, user]);
+  }, [selectedProject, user, isAdmin, isManager]);
 
   useEffect(() => {
     fetchProjects();
-    if (user && (isAdmin() || isManager())) {
+    if (user && isAdmin && isManager && (isAdmin() || isManager())) {
       fetchSupervisors();
     }
-  }, [user]);
+  }, [user, isAdmin, isManager]);
 
   const fetchProjects = async () => {
     try {
@@ -238,7 +238,7 @@ const Projects = () => {
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">Manage construction projects and sites</p>
         </div>
-        {user && (isAdmin() || isManager()) ? (
+        {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -282,7 +282,7 @@ const Projects = () => {
                 </span>
               </div>
               <div className="flex space-x-2">
-                {user && (isAdmin() || isManager()) ? (
+                {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
                   <>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -320,7 +320,7 @@ const Projects = () => {
                 <FiUsers className="mr-2" />
                 {project.site_count || 0} sites
               </div>
-              {user && (isAdmin() || isManager()) ? (
+              {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
                 <button
                   onClick={() => {
                     setSelectedProject(project);
@@ -345,7 +345,7 @@ const Projects = () => {
                             <p className="text-xs text-gray-500">{site.address}</p>
                           ) : null}
                         </div>
-                        {user && (isAdmin() || isManager()) && site ? (
+                        {user && isAdmin && isManager && site && (isAdmin() || isManager()) ? (
                           <button
                             onClick={() => handleEditSite(site)}
                             className="p-1 text-gray-600 hover:bg-gray-200 rounded"

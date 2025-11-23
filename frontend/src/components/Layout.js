@@ -102,9 +102,9 @@ const Layout = ({ children }) => {
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-4">
               <ul className="space-y-2">
-                {menuItems && menuItems.length > 0 ? (
+                {menuItems && Array.isArray(menuItems) && menuItems.length > 0 ? (
                   menuItems.map((item, index) => {
-                    if (!item || !item.icon) return null;
+                    if (!item || !item.icon || typeof item.icon !== 'function') return null;
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
                     return (
@@ -123,7 +123,7 @@ const Layout = ({ children }) => {
                               : 'text-gray-700 hover:bg-gray-50'
                           }`}
                         >
-                          <Icon size={20} />
+                          {Icon ? <Icon size={20} /> : null}
                           <span>{item.label || 'Menu'}</span>
                         </Link>
                       </motion.li>

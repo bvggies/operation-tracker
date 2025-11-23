@@ -166,9 +166,11 @@ const Tasks = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 gap-4">
-        {tasks.map((task, index) => (
+        {tasks && Array.isArray(tasks) && tasks.length > 0 ? (
+          tasks.map((task, index) => (
+            task ? (
           <motion.div
-            key={task.id}
+            key={task.id || index}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 + index * 0.05 }}
@@ -218,7 +220,13 @@ const Tasks = () => {
               ) : null}
             </div>
           </motion.div>
-        ))}
+            ) : null
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <p className="text-gray-500">No tasks found. Create your first task to get started.</p>
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode="wait">
