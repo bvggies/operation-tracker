@@ -39,9 +39,12 @@ const Tasks = () => {
   const fetchTasks = async () => {
     try {
       const response = await api.get('/tasks');
-      setTasks(response.data);
+      const tasksData = Array.isArray(response.data) ? response.data : [];
+      setTasks(tasksData);
     } catch (error) {
+      console.error('Error fetching tasks:', error);
       toast.error('Failed to fetch tasks');
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -84,7 +87,10 @@ const Tasks = () => {
         priority: 'medium',
         due_date: '',
       });
-      fetchTasks();
+      // Delay refresh to ensure modal is closed
+      setTimeout(() => {
+        fetchTasks();
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to create task');
     }
@@ -107,7 +113,10 @@ const Tasks = () => {
       toast.success('Task updated successfully');
       setShowUpdateModal(false);
       setSelectedTask(null);
-      fetchTasks();
+      // Delay refresh to ensure modal is closed
+      setTimeout(() => {
+        fetchTasks();
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update task');
     }

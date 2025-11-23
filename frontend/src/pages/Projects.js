@@ -47,9 +47,12 @@ const Projects = () => {
   const fetchProjects = async () => {
     try {
       const response = await api.get('/projects');
-      setProjects(response.data);
+      const projectsData = Array.isArray(response.data) ? response.data : [];
+      setProjects(projectsData);
     } catch (error) {
+      console.error('Error fetching projects:', error);
       toast.error('Failed to fetch projects');
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -58,10 +61,12 @@ const Projects = () => {
   const fetchSites = async (projectId) => {
     try {
       const response = await api.get(`/projects/${projectId}/sites`);
-      setSites(response.data);
+      const sitesData = Array.isArray(response.data) ? response.data : [];
+      setSites(sitesData);
     } catch (error) {
       console.error('Error fetching sites:', error);
       toast.error('Failed to fetch sites');
+      setSites([]);
     }
   };
 
@@ -190,11 +195,23 @@ const Projects = () => {
         try {
           await fetchProjects();
           // Update selectedProject to match the new projects list
-          const updatedProjects = await api.get('/projects');
-          const updatedProject = updatedProjects.data.find(p => p.id === projectId);
-          if (updatedProject) {
-            setSelectedProject(updatedProject);
-            await fetchSites(projectId);
+          try {
+            const updatedProjectsResponse = await api.get('/projects');
+            const updatedProjects = Array.isArray(updatedProjectsResponse.data) ? updatedProjectsResponse.data : [];
+            const updatedProject = updatedProjects.find(p => p && p.id === projectId);
+            if (updatedProject) {
+              setSelectedProject(updatedProject);
+              await fetchSites(projectId);
+            } else {
+              // Project not found, clear selection
+              setSelectedProject(null);
+              setSites([]);
+            }
+          } catch (refreshError) {
+            console.error('Error refreshing project data:', refreshError);
+            // Clear selection on error
+            setSelectedProject(null);
+            setSites([]);
           }
         } catch (error) {
           console.error('Error refreshing data:', error);
@@ -332,12 +349,12 @@ const Projects = () => {
                 </button>
               ) : null}
             </div>
-            {selectedProject?.id === project.id && sites && sites.length > 0 ? (
+            {selectedProject && selectedProject.id && project && project.id && selectedProject.id === project.id && sites && Array.isArray(sites) && sites.length > 0 ? (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Sites:</h4>
                 <div className="space-y-2">
                   {sites.map((site) => (
-                    site ? (
+                    site && site.id ? (
                       <div key={site.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div>
                           <p className="text-sm font-medium text-gray-900">{site.name || 'Unnamed Site'}</p>

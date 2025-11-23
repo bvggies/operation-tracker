@@ -26,9 +26,12 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users');
-      setUsers(response.data);
+      const usersData = Array.isArray(response.data) ? response.data : [];
+      setUsers(usersData);
     } catch (error) {
+      console.error('Error fetching users:', error);
       toast.error('Failed to fetch users');
+      setUsers([]);
     } finally {
       setLoading(false);
     }
