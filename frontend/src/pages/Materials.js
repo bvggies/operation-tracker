@@ -229,10 +229,9 @@ const Materials = () => {
             <p className="text-gray-600">Loading inventory...</p>
           </div>
         </motion.div>
-      ) : (
-        inventory.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {inventory.map((item, index) => (
+      ) : inventory.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {inventory.map((item, index) => (
             <motion.div
               key={item.id || index}
               initial={{ opacity: 0, y: 20 }}
@@ -273,6 +272,14 @@ const Materials = () => {
             </motion.div>
           ))}
         </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-white rounded-lg shadow-sm p-12 text-center"
+        >
+          <p className="text-gray-500">No inventory data available</p>
+        </motion.div>
       )}
 
       {/* Delivery Modal */}
