@@ -240,18 +240,37 @@ router.post('/:id/sites', async (req, res) => {
 // @access  Private/Admin, Manager, Supervisor
 router.put('/sites/:siteId', async (req, res) => {
   try {
+    // Check if user has permission
+    if (!['admin', 'manager', 'supervisor'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Not authorized to update sites' });
+    }
+
     const { name, address, supervisor_id, status } = req.body;
+
+    // Convert empty string to null for supervisor_id
+    const supervisorIdValue = supervisor_id && supervisor_id.trim() !== '' ? supervisor_id : null;
+
+    // If supervisor_id is provided, verify it exists
+    if (supervisorIdValue) {
+      const supervisorCheck = await pool.query(
+        'SELECT id FROM users WHERE id = $1 AND role IN ($2, $3, $4)',
+        [supervisorIdValue, 'admin', 'manager', 'supervisor']
+      );
+      if (supervisorCheck.rows.length === 0) {
+        return res.status(400).json({ message: 'Invalid supervisor' });
+      }
+    }
 
     const result = await pool.query(
       `UPDATE sites 
        SET name = COALESCE($1, name),
            address = COALESCE($2, address),
-           supervisor_id = COALESCE($3, supervisor_id),
+           supervisor_id = $3,
            status = COALESCE($4, status),
            updated_at = NOW()
        WHERE id = $5
        RETURNING *`,
-      [name, address, supervisor_id, status, req.params.siteId]
+      [name, address, supervisorIdValue, status, req.params.siteId]
     );
 
     if (result.rows.length === 0) {
@@ -262,8 +281,8 @@ router.put('/sites/:siteId', async (req, res) => {
 
     res.json({ message: 'Site updated successfully', site: result.rows[0] });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error updating site:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
