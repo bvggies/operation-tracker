@@ -50,6 +50,27 @@ router.get('/sites/all', async (req, res) => {
   }
 });
 
+// @route   GET /api/projects/sites/all
+// @desc    Get all sites
+// @access  Private
+router.get('/sites/all', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT s.*, 
+              p.name as project_name,
+              u.first_name || ' ' || u.last_name as supervisor_name
+       FROM sites s
+       LEFT JOIN projects p ON s.project_id = p.id
+       LEFT JOIN users u ON s.supervisor_id = u.id
+       ORDER BY s.created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/projects/:id
 // @desc    Get project by ID
 // @access  Private
@@ -134,52 +155,6 @@ router.put('/:id', async (req, res) => {
     await logAudit(req.user.id, 'UPDATE_PROJECT', 'project', req.params.id, req.body);
 
     res.json({ message: 'Project updated successfully', project: result.rows[0] });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// @route   GET /api/projects/:id
-// @desc    Get project by ID
-// @access  Private
-router.get('/:id', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT p.*, 
-              u.first_name || ' ' || u.last_name as created_by_name
-       FROM projects p
-       LEFT JOIN users u ON p.created_by = u.id
-       WHERE p.id = $1`,
-      [req.params.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Project not found' });
-    }
-
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// @route   GET /api/projects/sites/all
-// @desc    Get all sites
-// @access  Private
-router.get('/sites/all', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT s.*, 
-              p.name as project_name,
-              u.first_name || ' ' || u.last_name as supervisor_name
-       FROM sites s
-       LEFT JOIN projects p ON s.project_id = p.id
-       LEFT JOIN users u ON s.supervisor_id = u.id
-       ORDER BY s.created_at DESC`
-    );
-    res.json(result.rows);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
