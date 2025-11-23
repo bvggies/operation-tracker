@@ -205,11 +205,14 @@ router.post('/:id/sites', async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
 
+    // Convert empty string to null for supervisor_id
+    const supervisorIdValue = supervisor_id && supervisor_id.trim() !== '' ? supervisor_id : null;
+
     // If supervisor_id is provided, verify it exists
-    if (supervisor_id) {
+    if (supervisorIdValue) {
       const supervisorCheck = await pool.query(
         'SELECT id FROM users WHERE id = $1 AND role IN ($2, $3, $4)',
-        [supervisor_id, 'admin', 'manager', 'supervisor']
+        [supervisorIdValue, 'admin', 'manager', 'supervisor']
       );
       if (supervisorCheck.rows.length === 0) {
         return res.status(400).json({ message: 'Invalid supervisor' });
@@ -220,7 +223,7 @@ router.post('/:id/sites', async (req, res) => {
       `INSERT INTO sites (project_id, name, address, supervisor_id, status)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [req.params.id, name || null, address || null, supervisor_id || null, status || 'active']
+      [req.params.id, name || null, address || null, supervisorIdValue, status || 'active']
     );
 
     await logAudit(req.user.id, 'CREATE_SITE', 'site', result.rows[0].id, req.body);
