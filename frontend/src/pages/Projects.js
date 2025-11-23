@@ -147,11 +147,19 @@ const Projects = () => {
     }
 
     try {
+      // Prepare data - convert empty supervisor_id to null
+      const submitData = {
+        ...siteFormData,
+        supervisor_id: siteFormData.supervisor_id && siteFormData.supervisor_id.trim() !== '' 
+          ? siteFormData.supervisor_id 
+          : null,
+      };
+
       if (editingSite) {
-        const response = await api.put(`/projects/sites/${editingSite.id}`, siteFormData);
+        await api.put(`/projects/sites/${editingSite.id}`, submitData);
         toast.success('Site updated successfully');
       } else {
-        const response = await api.post(`/projects/${selectedProject.id}/sites`, siteFormData);
+        await api.post(`/projects/${selectedProject.id}/sites`, submitData);
         toast.success('Site created successfully');
       }
       setShowSiteModal(false);
@@ -168,7 +176,7 @@ const Projects = () => {
       fetchProjects();
     } catch (error) {
       console.error('Error submitting site:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Operation failed';
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Operation failed';
       toast.error(errorMessage);
     }
   };
