@@ -32,16 +32,17 @@ const Projects = () => {
   });
 
   useEffect(() => {
-    fetchProjects();
-    if ((isAdmin() || isManager()) && selectedProject) {
+    if (user && (isAdmin() || isManager()) && selectedProject) {
       fetchSites(selectedProject.id);
     }
-    fetchSupervisors();
-  }, [selectedProject]);
+  }, [selectedProject, user]);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+    if (user && (isAdmin() || isManager())) {
+      fetchSupervisors();
+    }
+  }, [user]);
 
   const fetchProjects = async () => {
     try {
@@ -196,8 +197,10 @@ const Projects = () => {
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">Manage construction projects and sites</p>
         </div>
-        {(isAdmin() || isManager()) && (
-          <button
+        {user && (isAdmin() || isManager()) && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               setEditingProject(null);
               setFormData({
@@ -214,12 +217,13 @@ const Projects = () => {
           >
             <FiPlus />
             <span>New Project</span>
-          </button>
+          </motion.button>
         )}
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, index) => (
+        {projects && projects.length > 0 ? (
+          projects.map((project, index) => (
           <motion.div
             key={project.id}
             initial={{ opacity: 0, y: 20 }}
@@ -236,22 +240,26 @@ const Projects = () => {
                 </span>
               </div>
               <div className="flex space-x-2">
-                {(isAdmin() || isManager()) && (
+                {user && (isAdmin() || isManager()) && (
                   <>
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleAddSite(project)}
                       className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
                       title="Add Site"
                     >
                       <FiPlus />
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleEdit(project)}
                       className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
                       title="Edit Project"
                     >
                       <FiEdit />
-                    </button>
+                    </motion.button>
                   </>
                 )}
               </div>
@@ -270,7 +278,7 @@ const Projects = () => {
                 <FiUsers className="mr-2" />
                 {project.site_count || 0} sites
               </div>
-              {(isAdmin() || isManager()) && (
+              {user && (isAdmin() || isManager()) && (
                 <button
                   onClick={() => {
                     setSelectedProject(project);
@@ -294,7 +302,7 @@ const Projects = () => {
                           <p className="text-xs text-gray-500">{site.address}</p>
                         )}
                       </div>
-                      {(isAdmin() || isManager()) && (
+                      {user && (isAdmin() || isManager()) && (
                         <button
                           onClick={() => handleEditSite(site)}
                           className="p-1 text-gray-600 hover:bg-gray-200 rounded"
@@ -308,12 +316,33 @@ const Projects = () => {
               </div>
             )}
           </motion.div>
-        ))}
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+            <p className="text-gray-500">No projects found. Create your first project to get started.</p>
+          </div>
+        )}
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowModal(false);
+              setEditingProject(null);
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+            >
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               {editingProject ? 'Edit Project' : 'New Project'}
             </h2>
@@ -398,9 +427,10 @@ const Projects = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Site Modal */}
       <AnimatePresence>
