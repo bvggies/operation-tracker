@@ -3,6 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
+// Initialize AOS
+AOS.init({
+  duration: 600,
+  easing: 'ease-in-out',
+  once: true,
+  offset: 100,
+  disable: window.innerWidth < 768, // Disable on mobile for performance
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

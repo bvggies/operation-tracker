@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiPackage, FiAlertCircle } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 const Materials = () => {
   const [inventory, setInventory] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [sites, setSites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sitesLoading, setSitesLoading] = useState(true);
   const [selectedSite, setSelectedSite] = useState('');
   const [showDeliveryModal, setShowDeliveryModal] = useState(false);
   const [showUsageModal, setShowUsageModal] = useState(false);
@@ -27,43 +29,65 @@ const Materials = () => {
   useEffect(() => {
     if (selectedSite) {
       fetchInventory();
+    } else {
+      setLoading(false);
     }
   }, [selectedSite]);
 
   const fetchMaterials = async () => {
     try {
       const response = await api.get('/materials');
-      setMaterials(response.data);
+      setMaterials(response.data || []);
     } catch (error) {
+      console.error('Error fetching materials:', error);
       toast.error('Failed to fetch materials');
+      setMaterials([]);
     }
   };
 
   const fetchSites = async () => {
     try {
+      setSitesLoading(true);
       const response = await api.get('/projects');
       const allSites = [];
-      for (const project of response.data) {
-        const sitesResponse = await api.get(`/projects/${project.id}/sites`);
-        allSites.push(...sitesResponse.data);
+      for (const project of response.data || []) {
+        try {
+          const sitesResponse = await api.get(`/projects/${project.id}/sites`);
+          if (sitesResponse.data && sitesResponse.data.length > 0) {
+            allSites.push(...sitesResponse.data);
+          }
+        } catch (error) {
+          console.error(`Error fetching sites for project ${project.id}:`, error);
+        }
       }
       setSites(allSites);
       if (allSites.length > 0) {
         setSelectedSite(allSites[0].id);
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching sites:', error);
+      toast.error('Failed to fetch sites');
+      setLoading(false);
+    } finally {
+      setSitesLoading(false);
     }
   };
 
   const fetchInventory = async () => {
-    if (!selectedSite) return;
+    if (!selectedSite) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const response = await api.get(`/materials/inventory/${selectedSite}`);
-      setInventory(response.data);
+      setInventory(response.data || []);
     } catch (error) {
+      console.error('Error fetching inventory:', error);
       toast.error('Failed to fetch inventory');
+      setInventory([]);
     } finally {
       setLoading(false);
     }
@@ -120,57 +144,106 @@ const Materials = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="flex items-center justify-between"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Materials</h1>
           <p className="text-gray-600 mt-1">Track material inventory and usage</p>
         </div>
         <div className="flex space-x-2">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowDeliveryModal(true)}
             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
           >
             <FiPlus />
             <span>Record Delivery</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowUsageModal(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             <FiPackage />
             <span>Record Usage</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowRequisitionModal(true)}
             className="flex items-center space-x-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
           >
             <FiPlus />
             <span>Request Material</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-      <div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Site</label>
-        <select
-          value={selectedSite}
-          onChange={(e) => setSelectedSite(e.target.value)}
-          className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        >
-          {sites.map((site) => (
-            <option key={site.id} value={site.id}>
-              {site.name}
-            </option>
-          ))}
-        </select>
-      </div>
+        {sitesLoading ? (
+          <div className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 animate-pulse">
+            Loading sites...
+          </div>
+        ) : sites.length > 0 ? (
+          <select
+            value={selectedSite}
+            onChange={(e) => setSelectedSite(e.target.value)}
+            className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            {sites.map((site) => (
+              <option key={site.id} value={site.id}>
+                {site.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <p className="text-gray-500">No sites available</p>
+        )}
+      </motion.div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64">Loading...</div>
-      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex items-center justify-center h-64"
+        >
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading inventory...</p>
+          </div>
+        </motion.div>
+      ) : inventory.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {inventory.map((item) => (
+          {inventory.map((item, index) => (
+            <motion.div
+              key={item.id || index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className={`bg-white rounded-lg shadow-sm p-6 ${
+                parseFloat(item.quantity || 0) <= parseFloat(item.min_threshold || 0)
+                  ? 'border-2 border-red-300'
+                  : ''
+              }`}
+            >
             <div
               key={item.id}
               className={`bg-white rounded-lg shadow-sm p-6 ${

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiHome,
   FiUsers,
@@ -66,10 +67,13 @@ const Layout = ({ children }) => {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside
-          className={`${
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-200 ease-in-out`}
+        <motion.aside
+          initial={false}
+          animate={{
+            x: sidebarOpen ? 0 : -256,
+          }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg"
         >
           <div className="h-full flex flex-col">
             {/* Logo */}
@@ -84,12 +88,17 @@ const Layout = ({ children }) => {
             <nav className="flex-1 overflow-y-auto p-4">
               <ul className="space-y-2">
                 {menuItems && menuItems.length > 0 ? (
-                  menuItems.map((item) => {
+                  menuItems.map((item, index) => {
                     if (!item || !item.icon) return null;
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
                     return (
-                      <li key={item.path || Math.random()}>
+                      <motion.li
+                        key={item.path || index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
                         <Link
                           to={item.path || '/dashboard'}
                           onClick={() => setSidebarOpen(false)}
@@ -102,7 +111,7 @@ const Layout = ({ children }) => {
                           <Icon size={20} />
                           <span>{item.label || 'Menu'}</span>
                         </Link>
-                      </li>
+                      </motion.li>
                     );
                   })
                 ) : (

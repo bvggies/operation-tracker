@@ -11,6 +11,7 @@ import {
   FiTrendingUp,
   FiAlertCircle,
 } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 // Recharts imports - commented out for now to avoid errors
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
@@ -109,11 +110,20 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-1">Overview of your operations</p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -122,21 +132,28 @@ const Dashboard = () => {
             if (!stat || !stat.icon) return null;
             const Icon = stat.icon;
             return (
-              <Link
+              <motion.div
                 key={index}
-                to={stat.link || '/dashboard'}
-                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + index * 0.1 }}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title || 'N/A'}</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value ?? 0}</p>
+                <Link
+                  to={stat.link || '/dashboard'}
+                  className="block bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">{stat.title || 'N/A'}</p>
+                      <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value ?? 0}</p>
+                    </div>
+                    <div className={`${stat.color || 'bg-gray-500'} p-4 rounded-lg`}>
+                      <Icon className="text-white" size={24} />
+                    </div>
                   </div>
-                  <div className={`${stat.color || 'bg-gray-500'} p-4 rounded-lg`}>
-                    <Icon className="text-white" size={24} />
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             );
           })
         ) : (
@@ -146,7 +163,12 @@ const Dashboard = () => {
 
       {/* Recent Tasks */}
       {stats?.recentTasks && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-white rounded-lg shadow-sm p-6"
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">Recent Tasks</h2>
             <Link to="/tasks" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -155,8 +177,14 @@ const Dashboard = () => {
           </div>
           <div className="space-y-3">
             {stats.recentTasks.length > 0 ? (
-              stats.recentTasks.map((task) => (
-                <div key={task.id || Math.random()} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            stats.recentTasks.map((task, index) => (
+              <motion.div
+                key={task.id || index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + index * 0.05 }}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                   <div>
                     <p className="font-medium text-gray-900">{task.title || 'Untitled Task'}</p>
                     <p className="text-sm text-gray-600">{task.site_name || 'No site'}</p>
@@ -187,8 +215,14 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
           <div className="space-y-3">
             {stats.recentActivities.length > 0 ? (
-              stats.recentActivities.map((activity) => (
-                <div key={activity.id || Math.random()} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+            stats.recentActivities.map((activity, index) => (
+              <motion.div
+                key={activity.id || index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + index * 0.05 }}
+                className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                   <FiTrendingUp className="text-blue-600 mt-1" />
                   <div className="flex-1">
                     <p className="text-sm text-gray-900">{activity.description || 'No description'}</p>
