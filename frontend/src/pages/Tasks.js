@@ -3,6 +3,7 @@ import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit, FiCheck, FiClock } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Tasks = () => {
   const { user } = useAuth();
@@ -152,11 +153,18 @@ const Tasks = () => {
             <span>New Task</span>
           </button>
         )}
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 gap-4">
-        {tasks.map((task) => (
-          <div key={task.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        {tasks.map((task, index) => (
+          <motion.div
+            key={task.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 + index * 0.05 }}
+            whileHover={{ x: 5, transition: { duration: 0.2 } }}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
@@ -199,13 +207,26 @@ const Tasks = () => {
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6">
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+            >
             <h2 className="text-2xl font-bold text-gray-900 mb-4">New Task</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -299,13 +320,30 @@ const Tasks = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
 
-      {showUpdateModal && selectedTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6">
+      <AnimatePresence>
+        {showUpdateModal && selectedTask && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowUpdateModal(false);
+              setSelectedTask(null);
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg max-w-2xl w-full p-6"
+            >
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Update Task</h2>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
@@ -363,10 +401,11 @@ const Tasks = () => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-    </div>
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

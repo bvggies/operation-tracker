@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiUsers } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -110,11 +111,18 @@ const Projects = () => {
           <FiPlus />
           <span>New Project</span>
         </button>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <div key={project.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+        {projects.map((project, index) => (
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + index * 0.1 }}
+            whileHover={{ y: -5, transition: { duration: 0.2 } }}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{project.name}</h3>
@@ -142,7 +150,7 @@ const Projects = () => {
               <FiUsers className="mr-2" />
               {project.site_count || 0} sites
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -236,7 +244,7 @@ const Projects = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

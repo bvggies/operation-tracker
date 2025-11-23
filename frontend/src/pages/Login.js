@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -35,8 +36,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4"
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ duration: 0.5, type: 'spring' }}
+        className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8"
+      >
         <div className="text-center mb-8">
           <img src="/logo.svg" alt="Logo" className="h-16 w-16 mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900">Operations Tracker</h1>
@@ -88,8 +99,8 @@ const Login = () => {
           <p className="text-sm text-blue-700">Username: admin</p>
           <p className="text-sm text-blue-700">Password: admin123</p>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

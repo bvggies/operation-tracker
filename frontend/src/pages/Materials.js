@@ -326,8 +326,20 @@ const Materials = () => {
 
 const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, showSupplier }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-lg max-w-md w-full p-6"
+      >
         <h2 className="text-2xl font-bold text-gray-900 mb-4">{title}</h2>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -394,8 +406,8 @@ const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, sho
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
