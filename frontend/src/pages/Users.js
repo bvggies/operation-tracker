@@ -39,7 +39,7 @@ const Users = () => {
     try {
       if (editingUser) {
         const { password, ...updateData } = formData;
-        if (!password) {
+        if (!password || password.trim() === '') {
           delete updateData.password;
         }
         await api.put(`/users/${editingUser.id}`, updateData);
@@ -48,6 +48,8 @@ const Users = () => {
         await api.post('/auth/register', formData);
         toast.success('User created successfully');
       }
+      
+      // Close modal and reset form first
       setShowModal(false);
       setEditingUser(null);
       setFormData({
@@ -58,7 +60,15 @@ const Users = () => {
         role: 'worker',
         password: '',
       });
-      fetchUsers();
+      
+      // Refresh data after a short delay to ensure state updates are complete
+      setTimeout(async () => {
+        try {
+          await fetchUsers();
+        } catch (error) {
+          console.error('Error refreshing users:', error);
+        }
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Operation failed');
     }
@@ -144,7 +154,8 @@ const Users = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
+            {users && Array.isArray(users) && users.map((user) => (
+              user ? (
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {user.first_name} {user.last_name}
@@ -183,12 +194,13 @@ const Users = () => {
                   </div>
                 </td>
               </tr>
+              ) : null
             ))}
           </tbody>
         </table>
       </div>
 
-      {showModal && (
+      {showModal ? (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -285,7 +297,7 @@ const Users = () => {
             </form>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

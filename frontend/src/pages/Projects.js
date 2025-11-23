@@ -87,6 +87,8 @@ const Projects = () => {
         await api.post('/projects', formData);
         toast.success('Project created successfully');
       }
+      
+      // Close modal and reset form first
       setShowModal(false);
       setEditingProject(null);
       setFormData({
@@ -97,7 +99,15 @@ const Projects = () => {
         end_date: '',
         status: 'active',
       });
-      fetchProjects();
+      
+      // Refresh data after a short delay to ensure state updates are complete
+      setTimeout(async () => {
+        try {
+          await fetchProjects();
+        } catch (error) {
+          console.error('Error refreshing projects:', error);
+        }
+      }, 100);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Operation failed');
     }
@@ -155,13 +165,17 @@ const Projects = () => {
           : null,
       };
 
+      const projectId = selectedProject.id;
+      
       if (editingSite) {
         await api.put(`/projects/sites/${editingSite.id}`, submitData);
         toast.success('Site updated successfully');
       } else {
-        await api.post(`/projects/${selectedProject.id}/sites`, submitData);
+        await api.post(`/projects/${projectId}/sites`, submitData);
         toast.success('Site created successfully');
       }
+      
+      // Close modal and reset form first
       setShowSiteModal(false);
       setEditingSite(null);
       setSiteFormData({
@@ -170,10 +184,22 @@ const Projects = () => {
         supervisor_id: '',
         status: 'active',
       });
-      if (selectedProject) {
-        fetchSites(selectedProject.id);
-      }
-      fetchProjects();
+      
+      // Refresh data after a short delay to ensure state updates are complete
+      setTimeout(async () => {
+        try {
+          await fetchProjects();
+          // Update selectedProject to match the new projects list
+          const updatedProjects = await api.get('/projects');
+          const updatedProject = updatedProjects.data.find(p => p.id === projectId);
+          if (updatedProject) {
+            setSelectedProject(updatedProject);
+            await fetchSites(projectId);
+          }
+        } catch (error) {
+          console.error('Error refreshing data:', error);
+        }
+      }, 100);
     } catch (error) {
       console.error('Error submitting site:', error);
       const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Operation failed';
@@ -237,8 +263,9 @@ const Projects = () => {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects && projects.length > 0 ? (
+        {projects && Array.isArray(projects) && projects.length > 0 ? (
           projects.map((project, index) => (
+            project ? (
           <motion.div
             key={project.id}
             initial={{ opacity: 0, y: 20 }}
@@ -305,19 +332,19 @@ const Projects = () => {
                 </button>
               )}
             </div>
-            {selectedProject?.id === project.id && sites.length > 0 && (
+            {selectedProject?.id === project.id && sites && sites.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Sites:</h4>
                 <div className="space-y-2">
                   {sites.map((site) => (
-                    <div key={site.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <div key={site?.id || Math.random()} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{site.name}</p>
-                        {site.address && (
+                        <p className="text-sm font-medium text-gray-900">{site?.name || 'Unnamed Site'}</p>
+                        {site?.address && (
                           <p className="text-xs text-gray-500">{site.address}</p>
                         )}
                       </div>
-                      {user && (isAdmin() || isManager()) && (
+                      {user && (isAdmin() || isManager()) && site && (
                         <button
                           onClick={() => handleEditSite(site)}
                           className="p-1 text-gray-600 hover:bg-gray-200 rounded"
@@ -331,6 +358,7 @@ const Projects = () => {
               </div>
             )}
           </motion.div>
+            ) : null
           ))
         ) : (
           <div className="col-span-full text-center py-12">
@@ -339,8 +367,8 @@ const Projects = () => {
         )}
       </div>
 
-      <AnimatePresence>
-        {showModal && (
+      <AnimatePresence mode="wait">
+        {showModal ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -444,12 +472,12 @@ const Projects = () => {
             </form>
             </motion.div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
 
       {/* Site Modal */}
-      <AnimatePresence>
-        {showSiteModal && selectedProject && (
+      <AnimatePresence mode="wait">
+        {showSiteModal && selectedProject ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -554,7 +582,7 @@ const Projects = () => {
               </form>
             </motion.div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </motion.div>
   );
