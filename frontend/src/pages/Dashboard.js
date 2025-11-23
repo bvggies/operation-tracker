@@ -211,7 +211,12 @@ const Dashboard = () => {
 
       {/* Recent Activities */}
       {stats?.recentActivities && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white rounded-lg shadow-sm p-6"
+        >
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
           <div className="space-y-3">
             {stats.recentActivities.length > 0 ? (
@@ -230,15 +235,15 @@ const Dashboard = () => {
                       {activity.user_name || 'Unknown'} • {activity.site_name || 'No site'} • {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : 'Unknown date'}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
               <p className="text-gray-500 text-center py-4">No recent activities</p>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
