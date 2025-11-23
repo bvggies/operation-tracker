@@ -1,0 +1,18 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="6" fill="#2563eb"/>
+  <g transform="translate(8, 6)">
+    <rect x="3" y="10" width="10" height="13" fill="white" opacity="0.95"/>
+    <rect x="5" y="12" width="2" height="2" fill="#2563eb"/>
+    <rect x="8" y="12" width="2" height="2" fill="#2563eb"/>
+    <rect x="11" y="12" width="2" height="2" fill="#2563eb"/>
+    <rect x="5" y="15" width="2" height="2" fill="#2563eb"/>
+    <rect x="8" y="15" width="2" height="2" fill="#2563eb"/>
+    <rect x="11" y="15" width="2" height="2" fill="#2563eb"/>
+    <rect x="7" y="18" width="4" height="5" fill="#1e40af"/>
+    <polygon points="1,10 8,4 15,10" fill="#fbbf24"/>
+    <line x1="0" y1="22" x2="0" y2="3" stroke="white" stroke-width="1.5"/>
+    <line x1="0" y1="3" x2="4" y2="3" stroke="white" stroke-width="1.5"/>
+    <circle cx="4" cy="6" r="1.5" fill="white"/>
+  </g>
+</svg>
+

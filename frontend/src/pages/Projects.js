@@ -1,0 +1,244 @@
+import React, { useState, useEffect } from 'react';
+import api from '../config/api';
+import { toast } from 'react-toastify';
+import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiUsers } from 'react-icons/fi';
+
+const Projects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    location: '',
+    start_date: '',
+    end_date: '',
+    status: 'active',
+  });
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects');
+      setProjects(response.data);
+    } catch (error) {
+      toast.error('Failed to fetch projects');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingProject) {
+        await api.put(`/projects/${editingProject.id}`, formData);
+        toast.success('Project updated successfully');
+      } else {
+        await api.post('/projects', formData);
+        toast.success('Project created successfully');
+      }
+      setShowModal(false);
+      setEditingProject(null);
+      setFormData({
+        name: '',
+        description: '',
+        location: '',
+        start_date: '',
+        end_date: '',
+        status: 'active',
+      });
+      fetchProjects();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Operation failed');
+    }
+  };
+
+  const handleEdit = (project) => {
+    setEditingProject(project);
+    setFormData({
+      name: project.name,
+      description: project.description || '',
+      location: project.location || '',
+      start_date: project.start_date || '',
+      end_date: project.end_date || '',
+      status: project.status,
+    });
+    setShowModal(true);
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      active: 'bg-green-100 text-green-800',
+      completed: 'bg-blue-100 text-blue-800',
+      on_hold: 'bg-yellow-100 text-yellow-800',
+      cancelled: 'bg-red-100 text-red-800',
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-64">Loading...</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
+          <p className="text-gray-600 mt-1">Manage construction projects</p>
+        </div>
+        <button
+          onClick={() => {
+            setEditingProject(null);
+            setFormData({
+              name: '',
+              description: '',
+              location: '',
+              start_date: '',
+              end_date: '',
+              status: 'active',
+            });
+            setShowModal(true);
+          }}
+          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          <FiPlus />
+          <span>New Project</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project) => (
+          <div key={project.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">{project.name}</h3>
+                <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
+                  {project.status.replace('_', ' ')}
+                </span>
+              </div>
+              <button
+                onClick={() => handleEdit(project)}
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <FiEdit />
+              </button>
+            </div>
+            {project.description && (
+              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
+            )}
+            {project.location && (
+              <div className="flex items-center text-sm text-gray-500 mb-2">
+                <FiMapPin className="mr-2" />
+                {project.location}
+              </div>
+            )}
+            <div className="flex items-center text-sm text-gray-500">
+              <FiUsers className="mr-2" />
+              {project.site_count || 0} sites
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {editingProject ? 'Edit Project' : 'New Project'}
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Project Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={formData.start_date}
+                    onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={formData.end_date}
+                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="active">Active</option>
+                  <option value="completed">Completed</option>
+                  <option value="on_hold">On Hold</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                >
+                  {editingProject ? 'Update' : 'Create'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    setEditingProject(null);
+                  }}
+                  className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Projects;
+
