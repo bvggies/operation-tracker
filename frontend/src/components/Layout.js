@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -29,18 +29,24 @@ const Layout = ({ children }) => {
     navigate('/login');
   };
 
-  const menuItems = [
-    { path: '/dashboard', icon: FiHome, label: 'Dashboard', roles: ['admin', 'manager', 'supervisor', 'worker'] },
-    { path: '/projects', icon: FiFolder, label: 'Projects', roles: ['admin', 'manager', 'supervisor'] },
-    { path: '/tasks', icon: FiCheckSquare, label: 'Tasks', roles: ['admin', 'manager', 'supervisor', 'worker'] },
-    { path: '/materials', icon: FiPackage, label: 'Materials', roles: ['admin', 'manager', 'supervisor', 'worker'] },
-    { path: '/equipment', icon: FiSettings, label: 'Equipment', roles: ['admin', 'manager', 'supervisor'] },
-    { path: '/attendance', icon: FiClock, label: 'Attendance', roles: ['admin', 'manager', 'supervisor', 'worker'] },
-    { path: '/reports', icon: FiBarChart2, label: 'Reports', roles: ['admin', 'manager'] },
-    { path: '/documents', icon: FiFileText, label: 'Documents', roles: ['admin', 'manager', 'supervisor'] },
-    { path: '/users', icon: FiUsers, label: 'Users', roles: ['admin', 'manager'] },
-    { path: '/audit', icon: FiShield, label: 'Audit Logs', roles: ['admin', 'manager'] },
-  ].filter(item => user && item.roles.includes(user.role));
+  const menuItems = useMemo(() => {
+    if (!user || !user.role) return [];
+    
+    const allItems = [
+      { path: '/dashboard', icon: FiHome, label: 'Dashboard', roles: ['admin', 'manager', 'supervisor', 'worker'] },
+      { path: '/projects', icon: FiFolder, label: 'Projects', roles: ['admin', 'manager', 'supervisor'] },
+      { path: '/tasks', icon: FiCheckSquare, label: 'Tasks', roles: ['admin', 'manager', 'supervisor', 'worker'] },
+      { path: '/materials', icon: FiPackage, label: 'Materials', roles: ['admin', 'manager', 'supervisor', 'worker'] },
+      { path: '/equipment', icon: FiSettings, label: 'Equipment', roles: ['admin', 'manager', 'supervisor'] },
+      { path: '/attendance', icon: FiClock, label: 'Attendance', roles: ['admin', 'manager', 'supervisor', 'worker'] },
+      { path: '/reports', icon: FiBarChart2, label: 'Reports', roles: ['admin', 'manager'] },
+      { path: '/documents', icon: FiFileText, label: 'Documents', roles: ['admin', 'manager', 'supervisor'] },
+      { path: '/users', icon: FiUsers, label: 'Users', roles: ['admin', 'manager'] },
+      { path: '/audit', icon: FiShield, label: 'Audit Logs', roles: ['admin', 'manager'] },
+    ];
+    
+    return allItems.filter(item => item.roles.includes(user.role));
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-gray-50">

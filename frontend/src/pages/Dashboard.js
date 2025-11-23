@@ -11,7 +11,8 @@ import {
   FiTrendingUp,
   FiAlertCircle,
 } from 'react-icons/fi';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+// Recharts imports - commented out for now to avoid errors
+// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -139,61 +140,65 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Tasks */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Recent Tasks</h2>
-          <Link to="/tasks" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-            View All
-          </Link>
-        </div>
-        <div className="space-y-3">
-          {stats?.recentTasks?.length > 0 ? (
-            stats.recentTasks.map((task) => (
-              <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{task.title}</p>
-                  <p className="text-sm text-gray-600">{task.site_name}</p>
+      {stats?.recentTasks && (
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Recent Tasks</h2>
+            <Link to="/tasks" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              View All
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {stats.recentTasks.length > 0 ? (
+              stats.recentTasks.map((task) => (
+                <div key={task.id || Math.random()} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-900">{task.title || 'Untitled Task'}</p>
+                    <p className="text-sm text-gray-600">{task.site_name || 'No site'}</p>
+                  </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      task.status === 'completed'
+                        ? 'bg-green-100 text-green-800'
+                        : task.status === 'in_progress'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {task.status ? task.status.replace('_', ' ') : 'Unknown'}
+                  </span>
                 </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    task.status === 'completed'
-                      ? 'bg-green-100 text-green-800'
-                      : task.status === 'in_progress'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}
-                >
-                  {task.status.replace('_', ' ')}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-center py-4">No recent tasks</p>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">No recent tasks</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Recent Activities */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
-        <div className="space-y-3">
-          {stats?.recentActivities?.length > 0 ? (
-            stats.recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
-                <FiTrendingUp className="text-blue-600 mt-1" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">{activity.description}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {activity.user_name} • {activity.site_name} • {new Date(activity.created_at).toLocaleDateString()}
-                  </p>
+      {stats?.recentActivities && (
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
+          <div className="space-y-3">
+            {stats.recentActivities.length > 0 ? (
+              stats.recentActivities.map((activity) => (
+                <div key={activity.id || Math.random()} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                  <FiTrendingUp className="text-blue-600 mt-1" />
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">{activity.description || 'No description'}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {activity.user_name || 'Unknown'} • {activity.site_name || 'No site'} • {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : 'Unknown date'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 text-center py-4">No recent activities</p>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center py-4">No recent activities</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
