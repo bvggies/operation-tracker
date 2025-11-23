@@ -20,8 +20,16 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+  if (allowedRoles.length > 0 && user.role && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  if (!children) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">No content available</p>
+      </div>
+    );
   }
 
   return <>{children}</>;

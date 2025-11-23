@@ -83,51 +83,60 @@ const Layout = ({ children }) => {
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-4">
               <ul className="space-y-2">
-                {menuItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <li key={item.path}>
-                      <Link
-                        to={item.path}
-                        onClick={() => setSidebarOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                          isActive
-                            ? 'bg-blue-50 text-blue-600 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        <Icon size={20} />
-                        <span>{item.label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
+                {menuItems && menuItems.length > 0 ? (
+                  menuItems.map((item) => {
+                    if (!item || !item.icon) return null;
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
+                    return (
+                      <li key={item.path || Math.random()}>
+                        <Link
+                          to={item.path || '/dashboard'}
+                          onClick={() => setSidebarOpen(false)}
+                          className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                            isActive
+                              ? 'bg-blue-50 text-blue-600 font-medium'
+                              : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          <Icon size={20} />
+                          <span>{item.label || 'Menu'}</span>
+                        </Link>
+                      </li>
+                    );
+                  })
+                ) : (
+                  <li className="px-4 py-3 text-gray-500 text-sm">No menu items available</li>
+                )}
               </ul>
             </nav>
 
             {/* User info */}
-            <div className="p-4 border-t border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
-                  <p className="text-sm text-gray-500 capitalize">{user?.role}</p>
+            {user && (
+              <div className="p-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {user.first_name || ''} {user.last_name || ''}
+                    </p>
+                    <p className="text-sm text-gray-500 capitalize">{user.role || 'user'}</p>
+                  </div>
+                  <Link
+                    to="/notifications"
+                    className="relative p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    <FiBell size={20} />
+                  </Link>
                 </div>
-                <Link
-                  to="/notifications"
-                  className="relative p-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                 >
-                  <FiBell size={20} />
-                </Link>
+                  <FiLogOut size={20} />
+                  <span>Logout</span>
+                </button>
               </div>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <FiLogOut size={20} />
-                <span>Logout</span>
-              </button>
-            </div>
+            )}
           </div>
         </aside>
 

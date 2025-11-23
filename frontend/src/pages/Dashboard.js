@@ -117,26 +117,31 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {statCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Link
-              key={index}
-              to={stat.link}
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+        {statCards && statCards.length > 0 ? (
+          statCards.map((stat, index) => {
+            if (!stat || !stat.icon) return null;
+            const Icon = stat.icon;
+            return (
+              <Link
+                key={index}
+                to={stat.link || '/dashboard'}
+                className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">{stat.title || 'N/A'}</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value ?? 0}</p>
+                  </div>
+                  <div className={`${stat.color || 'bg-gray-500'} p-4 rounded-lg`}>
+                    <Icon className="text-white" size={24} />
+                  </div>
                 </div>
-                <div className={`${stat.color} p-4 rounded-lg`}>
-                  <Icon className="text-white" size={24} />
-                </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })
+        ) : (
+          <div className="col-span-full text-center py-8 text-gray-500">No statistics available</div>
+        )}
       </div>
 
       {/* Recent Tasks */}
