@@ -14,16 +14,24 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    const result = await login(username, password);
+    try {
+      const result = await login(username, password);
 
-    if (result.success) {
-      toast.success('Login successful!');
-      navigate('/dashboard');
-    } else {
-      toast.error(result.message || 'Login failed');
+      if (result.success) {
+        toast.success('Login successful!');
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 100);
+      } else {
+        toast.error(result.message || 'Login failed');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login form error:', error);
+      toast.error('An unexpected error occurred. Please try again.');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

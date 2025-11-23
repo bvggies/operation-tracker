@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
     { path: '/documents', icon: FiFileText, label: 'Documents', roles: ['admin', 'manager', 'supervisor'] },
     { path: '/users', icon: FiUsers, label: 'Users', roles: ['admin', 'manager'] },
     { path: '/audit', icon: FiShield, label: 'Audit Logs', roles: ['admin', 'manager'] },
-  ].filter(item => item.roles.includes(user?.role));
+  ].filter(item => user && item.roles.includes(user.role));
 
   return (
     <div className="min-h-screen bg-gray-50">
