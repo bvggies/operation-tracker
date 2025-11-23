@@ -187,21 +187,48 @@ router.get('/:id/sites', async (req, res) => {
 // @access  Private/Admin, Manager, Supervisor
 router.post('/:id/sites', async (req, res) => {
   try {
+    // Check if user has permission
+    if (!['admin', 'manager', 'supervisor'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Not authorized to create sites' });
+    }
+
     const { name, address, supervisor_id, status } = req.body;
+
+    // Validate required fields
+    if (!name) {
+      return res.status(400).json({ message: 'Site name is required' });
+    }
+
+    // Verify project exists
+    const projectCheck = await pool.query('SELECT id FROM projects WHERE id = $1', [req.params.id]);
+    if (projectCheck.rows.length === 0) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    // If supervisor_id is provided, verify it exists
+    if (supervisor_id) {
+      const supervisorCheck = await pool.query(
+        'SELECT id FROM users WHERE id = $1 AND role IN ($2, $3, $4)',
+        [supervisor_id, 'admin', 'manager', 'supervisor']
+      );
+      if (supervisorCheck.rows.length === 0) {
+        return res.status(400).json({ message: 'Invalid supervisor' });
+      }
+    }
 
     const result = await pool.query(
       `INSERT INTO sites (project_id, name, address, supervisor_id, status)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [req.params.id, name, address, supervisor_id, status || 'active']
+      [req.params.id, name || null, address || null, supervisor_id || null, status || 'active']
     );
 
     await logAudit(req.user.id, 'CREATE_SITE', 'site', result.rows[0].id, req.body);
 
     res.status(201).json({ message: 'Site created successfully', site: result.rows[0] });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error creating site:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 

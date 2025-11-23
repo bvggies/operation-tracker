@@ -141,14 +141,17 @@ const Projects = () => {
 
   const handleSiteSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedProject) return;
+    if (!selectedProject) {
+      toast.error('No project selected');
+      return;
+    }
 
     try {
       if (editingSite) {
-        await api.put(`/projects/sites/${editingSite.id}`, siteFormData);
+        const response = await api.put(`/projects/sites/${editingSite.id}`, siteFormData);
         toast.success('Site updated successfully');
       } else {
-        await api.post(`/projects/${selectedProject.id}/sites`, siteFormData);
+        const response = await api.post(`/projects/${selectedProject.id}/sites`, siteFormData);
         toast.success('Site created successfully');
       }
       setShowSiteModal(false);
@@ -159,10 +162,14 @@ const Projects = () => {
         supervisor_id: '',
         status: 'active',
       });
-      fetchSites(selectedProject.id);
+      if (selectedProject) {
+        fetchSites(selectedProject.id);
+      }
       fetchProjects();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Operation failed');
+      console.error('Error submitting site:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Operation failed';
+      toast.error(errorMessage);
     }
   };
 
@@ -494,12 +501,16 @@ const Projects = () => {
                     onChange={(e) => setSiteFormData({ ...siteFormData, supervisor_id: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">Select Supervisor</option>
-                    {supervisors.map((supervisor) => (
-                      <option key={supervisor.id} value={supervisor.id}>
-                        {supervisor.first_name} {supervisor.last_name} ({supervisor.role})
-                      </option>
-                    ))}
+                    <option value="">Select Supervisor (Optional)</option>
+                    {supervisors && supervisors.length > 0 ? (
+                      supervisors.map((supervisor) => (
+                        <option key={supervisor.id} value={supervisor.id}>
+                          {supervisor.first_name || ''} {supervisor.last_name || ''} ({supervisor.role || 'user'})
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>No supervisors available</option>
+                    )}
                   </select>
                 </div>
                 <div>
