@@ -162,7 +162,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Tasks */}
-      {stats?.recentTasks && (
+      {stats?.recentTasks && Array.isArray(stats.recentTasks) && stats.recentTasks.length > 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -176,15 +176,15 @@ const Dashboard = () => {
             </Link>
           </div>
           <div className="space-y-3">
-            {stats.recentTasks.length > 0 ? (
-            stats.recentTasks.map((task, index) => (
-              <motion.div
-                key={task.id || index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.05 }}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
+            {stats.recentTasks.map((task, index) => (
+              task ? (
+                <motion.div
+                  key={task.id || index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + index * 0.05 }}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <div>
                     <p className="font-medium text-gray-900">{task.title || 'Untitled Task'}</p>
                     <p className="text-sm text-gray-600">{task.site_name || 'No site'}</p>
@@ -201,16 +201,14 @@ const Dashboard = () => {
                     {task.status ? task.status.replace('_', ' ') : 'Unknown'}
                   </span>
                 </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-4">No recent tasks</p>
-            )}
+              ) : null
+            ))}
           </div>
         </motion.div>
-      )}
+      ) : null}
 
       {/* Recent Activities */}
-      {stats?.recentActivities && (
+      {stats?.recentActivities && Array.isArray(stats.recentActivities) && stats.recentActivities.length > 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -219,15 +217,15 @@ const Dashboard = () => {
         >
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
           <div className="space-y-3">
-            {stats.recentActivities.length > 0 ? (
-            stats.recentActivities.map((activity, index) => (
-              <motion.div
-                key={activity.id || index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7 + index * 0.05 }}
-                className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
+            {stats.recentActivities.map((activity, index) => (
+              activity ? (
+                <motion.div
+                  key={activity.id || index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.7 + index * 0.05 }}
+                  className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <FiTrendingUp className="text-blue-600 mt-1" />
                   <div className="flex-1">
                     <p className="text-sm text-gray-900">{activity.description || 'No description'}</p>
@@ -236,13 +234,11 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-4">No recent activities</p>
-            )}
+              ) : null
+            ))}
           </div>
         </motion.div>
-      )}
+      ) : null}
     </motion.div>
   );
 };

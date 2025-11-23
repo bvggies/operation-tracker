@@ -87,24 +87,24 @@ const Equipment = () => {
               </span>
             </div>
             <div className="space-y-2 text-sm">
-              {item.model && (
+              {item.model ? (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Model:</span>
                   <span className="text-gray-900">{item.model}</span>
                 </div>
-              )}
-              {item.serial_number && (
+              ) : null}
+              {item.serial_number ? (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Serial:</span>
                   <span className="text-gray-900 font-mono text-xs">{item.serial_number}</span>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         ))}
       </div>
 
-      {showModal && (
+      {showModal ? (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Equipment</h2>
@@ -178,7 +178,7 @@ const Equipment = () => {
             </form>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -238,7 +238,7 @@ const Projects = () => {
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">Manage construction projects and sites</p>
         </div>
-        {user && (isAdmin() || isManager()) && (
+        {user && (isAdmin() || isManager()) ? (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -259,7 +259,7 @@ const Projects = () => {
             <FiPlus />
             <span>New Project</span>
           </motion.button>
-        )}
+        ) : null}
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -282,7 +282,7 @@ const Projects = () => {
                 </span>
               </div>
               <div className="flex space-x-2">
-                {user && (isAdmin() || isManager()) && (
+                {user && (isAdmin() || isManager()) ? (
                   <>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -303,24 +303,24 @@ const Projects = () => {
                       <FiEdit />
                     </motion.button>
                   </>
-                )}
+                ) : null}
               </div>
             </div>
-            {project.description && (
+            {project.description ? (
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
-            )}
-            {project.location && (
+            ) : null}
+            {project.location ? (
               <div className="flex items-center text-sm text-gray-500 mb-2">
                 <FiMapPin className="mr-2" />
                 {project.location}
               </div>
-            )}
+            ) : null}
             <div className="flex items-center justify-between text-sm text-gray-500">
               <div className="flex items-center">
                 <FiUsers className="mr-2" />
                 {project.site_count || 0} sites
               </div>
-              {user && (isAdmin() || isManager()) && (
+              {user && (isAdmin() || isManager()) ? (
                 <button
                   onClick={() => {
                     setSelectedProject(project);
@@ -330,33 +330,35 @@ const Projects = () => {
                 >
                   View Sites
                 </button>
-              )}
+              ) : null}
             </div>
-            {selectedProject?.id === project.id && sites && sites.length > 0 && (
+            {selectedProject?.id === project.id && sites && sites.length > 0 ? (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">Sites:</h4>
                 <div className="space-y-2">
                   {sites.map((site) => (
-                    <div key={site?.id || Math.random()} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{site?.name || 'Unnamed Site'}</p>
-                        {site?.address && (
-                          <p className="text-xs text-gray-500">{site.address}</p>
-                        )}
+                    site ? (
+                      <div key={site.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{site.name || 'Unnamed Site'}</p>
+                          {site.address ? (
+                            <p className="text-xs text-gray-500">{site.address}</p>
+                          ) : null}
+                        </div>
+                        {user && (isAdmin() || isManager()) && site ? (
+                          <button
+                            onClick={() => handleEditSite(site)}
+                            className="p-1 text-gray-600 hover:bg-gray-200 rounded"
+                          >
+                            <FiEdit size={14} />
+                          </button>
+                        ) : null}
                       </div>
-                      {user && (isAdmin() || isManager()) && site && (
-                        <button
-                          onClick={() => handleEditSite(site)}
-                          className="p-1 text-gray-600 hover:bg-gray-200 rounded"
-                        >
-                          <FiEdit size={14} />
-                        </button>
-                      )}
-                    </div>
+                    ) : null
                   ))}
                 </div>
               </div>
-            )}
+            ) : null}
           </motion.div>
             ) : null
           ))

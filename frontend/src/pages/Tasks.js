@@ -154,7 +154,7 @@ const Tasks = () => {
           <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
           <p className="text-gray-600 mt-1">Manage and track tasks</p>
         </div>
-        {user?.role !== 'worker' && (
+        {user?.role !== 'worker' ? (
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
@@ -162,7 +162,7 @@ const Tasks = () => {
           <FiPlus />
           <span>New Task</span>
         </button>
-        )}
+        ) : null}
       </motion.div>
 
       <div className="grid grid-cols-1 gap-4">
@@ -186,21 +186,21 @@ const Tasks = () => {
                     {task.priority}
                   </span>
                 </div>
-                {task.description && (
+                {task.description ? (
                   <p className="text-gray-600 text-sm mb-3">{task.description}</p>
-                )}
+                ) : null}
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <span>Site: {task.site_name}</span>
-                  {task.assigned_to_name && <span>Assigned to: {task.assigned_to_name}</span>}
-                  {task.due_date && (
+                  <span>Site: {task.site_name || 'No site'}</span>
+                  {task.assigned_to_name ? <span>Assigned to: {task.assigned_to_name}</span> : null}
+                  {task.due_date ? (
                     <span className="flex items-center">
                       <FiClock className="mr-1" />
                       Due: {new Date(task.due_date).toLocaleDateString()}
                     </span>
-                  )}
+                  ) : null}
                 </div>
               </div>
-              {(user?.role !== 'worker' || task.assigned_to === user?.id) && (
+              {(user?.role !== 'worker' || task.assigned_to === user?.id) ? (
                 <button
                   onClick={() => {
                     setSelectedTask(task);
@@ -215,14 +215,14 @@ const Tasks = () => {
                 >
                   <FiEdit />
                 </button>
-              )}
+              ) : null}
             </div>
           </motion.div>
         ))}
       </div>
 
-      <AnimatePresence>
-        {showModal && (
+      <AnimatePresence mode="wait">
+        {showModal ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -332,11 +332,11 @@ const Tasks = () => {
             </form>
           </motion.div>
         </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showUpdateModal && selectedTask && (
+      <AnimatePresence mode="wait">
+        {showUpdateModal && selectedTask ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -413,7 +413,7 @@ const Tasks = () => {
             </form>
           </motion.div>
         </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </motion.div>
   );

@@ -261,12 +261,12 @@ const Materials = () => {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{item.material_name || 'Unknown Material'}</h3>
-                  {parseFloat(item.quantity || 0) <= parseFloat(item.min_threshold || 0) && (
+                  {parseFloat(item.quantity || 0) <= parseFloat(item.min_threshold || 0) ? (
                     <div className="flex items-center text-red-600 text-sm mt-1">
                       <FiAlertCircle className="mr-1" />
                       Low Stock
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
               <div className="space-y-2">
@@ -297,7 +297,7 @@ const Materials = () => {
       )}
 
       {/* Delivery Modal */}
-      {showDeliveryModal && (
+      {showDeliveryModal ? (
         <Modal
           title="Record Delivery"
           onClose={() => setShowDeliveryModal(false)}
@@ -307,10 +307,10 @@ const Materials = () => {
           materials={materials}
           showSupplier={true}
         />
-      )}
+      ) : null}
 
       {/* Usage Modal */}
-      {showUsageModal && (
+      {showUsageModal ? (
         <Modal
           title="Record Usage"
           onClose={() => setShowUsageModal(false)}
@@ -320,10 +320,10 @@ const Materials = () => {
           materials={materials}
           showSupplier={false}
         />
-      )}
+      ) : null}
 
       {/* Requisition Modal */}
-      {showRequisitionModal && (
+      {showRequisitionModal ? (
         <Modal
           title="Request Material"
           onClose={() => setShowRequisitionModal(false)}
@@ -333,7 +333,7 @@ const Materials = () => {
           materials={materials}
           showSupplier={false}
         />
-      )}
+      ) : null}
     </motion.div>
   );
 };
@@ -383,7 +383,7 @@ const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, sho
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {showSupplier && (
+          {showSupplier ? (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
               <input
@@ -393,7 +393,7 @@ const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, sho
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          )}
+          ) : null}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input

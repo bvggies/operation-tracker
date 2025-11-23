@@ -136,7 +136,7 @@ const Layout = ({ children }) => {
             </nav>
 
             {/* User info */}
-            {user && (
+            {user ? (
               <div className="p-4 border-t border-gray-200">
                 <div className="flex items-center justify-between mb-3">
                   <div>
@@ -160,17 +160,17 @@ const Layout = ({ children }) => {
                   <span>Logout</span>
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         </motion.aside>
 
         {/* Overlay for mobile */}
-        {sidebarOpen && (
+        {sidebarOpen ? (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
-        )}
+        ) : null}
 
         {/* Main content */}
         <main className="flex-1 lg:ml-0">

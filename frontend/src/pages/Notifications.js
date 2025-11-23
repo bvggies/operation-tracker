@@ -96,23 +96,23 @@ const Notifications = () => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
                     <h3 className="font-bold text-gray-900">{notification.title}</h3>
-                    {!notification.is_read && (
+                    {!notification.is_read ? (
                       <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    )}
+                    ) : null}
                   </div>
                   <p className="text-gray-600">{notification.message}</p>
                   <p className="text-sm text-gray-500 mt-2">
                     {new Date(notification.created_at).toLocaleString()}
                   </p>
                 </div>
-                {!notification.is_read && (
+                {!notification.is_read ? (
                   <button
                     onClick={() => markAsRead(notification.id)}
                     className="ml-4 p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                   >
                     <FiCheck />
                   </button>
-                )}
+                ) : null}
               </div>
             </div>
           ))

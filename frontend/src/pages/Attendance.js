@@ -134,7 +134,7 @@ const Attendance = () => {
           <h1 className="text-3xl font-bold text-gray-900">Attendance</h1>
           <p className="text-gray-600 mt-1">Track worker attendance</p>
         </div>
-        {user?.role === 'worker' && (
+        {user?.role === 'worker' ? (
           <div className="flex space-x-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -155,7 +155,7 @@ const Attendance = () => {
               <span>Clock Out</span>
             </motion.button>
           </div>
-        )}
+        ) : null}
       </motion.div>
 
       <motion.div

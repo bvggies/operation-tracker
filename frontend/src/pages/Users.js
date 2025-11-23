@@ -120,7 +120,7 @@ const Users = () => {
           <h1 className="text-3xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-600 mt-1">Manage user accounts</p>
         </div>
-        {isAdmin() && (
+        {isAdmin() ? (
           <button
             onClick={() => {
               setEditingUser(null);
@@ -139,7 +139,7 @@ const Users = () => {
             <FiPlus />
             <span>New User</span>
           </button>
-        )}
+        ) : null}
       </div>
 
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -183,14 +183,14 @@ const Users = () => {
                     >
                       <FiEdit />
                     </button>
-                    {isAdmin() && user.is_active && (
+                    {isAdmin() && user.is_active ? (
                       <button
                         onClick={() => handleDeactivate(user.id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         <FiX />
                       </button>
-                    )}
+                    ) : null}
                   </div>
                 </td>
               </tr>
