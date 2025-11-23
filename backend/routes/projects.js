@@ -119,6 +119,27 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// @route   GET /api/projects/sites
+// @desc    Get all sites
+// @access  Private
+router.get('/sites/all', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT s.*, 
+              p.name as project_name,
+              u.first_name || ' ' || u.last_name as supervisor_name
+       FROM sites s
+       LEFT JOIN projects p ON s.project_id = p.id
+       LEFT JOIN users u ON s.supervisor_id = u.id
+       ORDER BY s.created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/projects/:id/sites
 // @desc    Get sites for a project
 // @access  Private

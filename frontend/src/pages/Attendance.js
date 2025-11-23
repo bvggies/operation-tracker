@@ -28,6 +28,20 @@ const Attendance = () => {
   const fetchSites = async () => {
     try {
       setSitesLoading(true);
+      // Try to fetch all sites first (new endpoint)
+      try {
+        const response = await api.get('/projects/sites/all');
+        if (response.data && response.data.length > 0) {
+          setSites(response.data);
+          setSelectedSite(response.data[0].id);
+          setSitesLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log('All sites endpoint not available, falling back to project-based fetch');
+      }
+      
+      // Fallback to fetching by project
       const response = await api.get('/projects');
       const allSites = [];
       for (const project of response.data) {
@@ -162,12 +176,12 @@ const Attendance = () => {
           >
             {sites.map((site) => (
               <option key={site.id} value={site.id}>
-                {site.name}
+                {site.name} {site.project_name ? `(${site.project_name})` : ''}
               </option>
             ))}
           </select>
         ) : (
-          <p className="text-gray-500">No sites available</p>
+          <p className="text-gray-500">No sites available. Please add sites to projects first.</p>
         )}
       </motion.div>
 

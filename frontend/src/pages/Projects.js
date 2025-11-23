@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
-import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiUsers } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiUsers, FiX } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 const Projects = () => {
+  const { user, isAdmin, isManager } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showSiteModal, setShowSiteModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [sites, setSites] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
   const [editingProject, setEditingProject] = useState(null);
+  const [editingSite, setEditingSite] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -17,6 +24,20 @@ const Projects = () => {
     end_date: '',
     status: 'active',
   });
+  const [siteFormData, setSiteFormData] = useState({
+    name: '',
+    address: '',
+    supervisor_id: '',
+    status: 'active',
+  });
+
+  useEffect(() => {
+    fetchProjects();
+    if ((isAdmin() || isManager()) && selectedProject) {
+      fetchSites(selectedProject.id);
+    }
+    fetchSupervisors();
+  }, [selectedProject]);
 
   useEffect(() => {
     fetchProjects();
@@ -30,6 +51,28 @@ const Projects = () => {
       toast.error('Failed to fetch projects');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSites = async (projectId) => {
+    try {
+      const response = await api.get(`/projects/${projectId}/sites`);
+      setSites(response.data);
+    } catch (error) {
+      console.error('Error fetching sites:', error);
+      toast.error('Failed to fetch sites');
+    }
+  };
+
+  const fetchSupervisors = async () => {
+    try {
+      const response = await api.get('/users');
+      const supervisorsList = response.data.filter(
+        (u) => ['admin', 'manager', 'supervisor'].includes(u.role) && u.active
+      );
+      setSupervisors(supervisorsList);
+    } catch (error) {
+      console.error('Error fetching supervisors:', error);
     }
   };
 
@@ -72,6 +115,56 @@ const Projects = () => {
     setShowModal(true);
   };
 
+  const handleAddSite = (project) => {
+    setSelectedProject(project);
+    setEditingSite(null);
+    setSiteFormData({
+      name: '',
+      address: '',
+      supervisor_id: '',
+      status: 'active',
+    });
+    setShowSiteModal(true);
+  };
+
+  const handleEditSite = (site) => {
+    setEditingSite(site);
+    setSiteFormData({
+      name: site.name,
+      address: site.address || '',
+      supervisor_id: site.supervisor_id || '',
+      status: site.status,
+    });
+    setShowSiteModal(true);
+  };
+
+  const handleSiteSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedProject) return;
+
+    try {
+      if (editingSite) {
+        await api.put(`/projects/sites/${editingSite.id}`, siteFormData);
+        toast.success('Site updated successfully');
+      } else {
+        await api.post(`/projects/${selectedProject.id}/sites`, siteFormData);
+        toast.success('Site created successfully');
+      }
+      setShowSiteModal(false);
+      setEditingSite(null);
+      setSiteFormData({
+        name: '',
+        address: '',
+        supervisor_id: '',
+        status: 'active',
+      });
+      fetchSites(selectedProject.id);
+      fetchProjects();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Operation failed');
+    }
+  };
+
   const getStatusColor = (status) => {
     const colors = {
       active: 'bg-green-100 text-green-800',
@@ -101,26 +194,28 @@ const Projects = () => {
       >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-600 mt-1">Manage construction projects</p>
+          <p className="text-gray-600 mt-1">Manage construction projects and sites</p>
         </div>
-        <button
-          onClick={() => {
-            setEditingProject(null);
-            setFormData({
-              name: '',
-              description: '',
-              location: '',
-              start_date: '',
-              end_date: '',
-              status: 'active',
-            });
-            setShowModal(true);
-          }}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          <FiPlus />
-          <span>New Project</span>
-        </button>
+        {(isAdmin() || isManager()) && (
+          <button
+            onClick={() => {
+              setEditingProject(null);
+              setFormData({
+                name: '',
+                description: '',
+                location: '',
+                start_date: '',
+                end_date: '',
+                status: 'active',
+              });
+              setShowModal(true);
+            }}
+            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
+            <FiPlus />
+            <span>New Project</span>
+          </button>
+        )}
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -140,12 +235,26 @@ const Projects = () => {
                   {project.status.replace('_', ' ')}
                 </span>
               </div>
-              <button
-                onClick={() => handleEdit(project)}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-              >
-                <FiEdit />
-              </button>
+              <div className="flex space-x-2">
+                {(isAdmin() || isManager()) && (
+                  <>
+                    <button
+                      onClick={() => handleAddSite(project)}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+                      title="Add Site"
+                    >
+                      <FiPlus />
+                    </button>
+                    <button
+                      onClick={() => handleEdit(project)}
+                      className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                      title="Edit Project"
+                    >
+                      <FiEdit />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
             {project.description && (
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
@@ -156,10 +265,48 @@ const Projects = () => {
                 {project.location}
               </div>
             )}
-            <div className="flex items-center text-sm text-gray-500">
-              <FiUsers className="mr-2" />
-              {project.site_count || 0} sites
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <div className="flex items-center">
+                <FiUsers className="mr-2" />
+                {project.site_count || 0} sites
+              </div>
+              {(isAdmin() || isManager()) && (
+                <button
+                  onClick={() => {
+                    setSelectedProject(project);
+                    fetchSites(project.id);
+                  }}
+                  className="text-blue-600 hover:text-blue-700 text-xs font-medium"
+                >
+                  View Sites
+                </button>
+              )}
             </div>
+            {selectedProject?.id === project.id && sites.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Sites:</h4>
+                <div className="space-y-2">
+                  {sites.map((site) => (
+                    <div key={site.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{site.name}</p>
+                        {site.address && (
+                          <p className="text-xs text-gray-500">{site.address}</p>
+                        )}
+                      </div>
+                      {(isAdmin() || isManager()) && (
+                        <button
+                          onClick={() => handleEditSite(site)}
+                          className="p-1 text-gray-600 hover:bg-gray-200 rounded"
+                        >
+                          <FiEdit size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
@@ -254,6 +401,112 @@ const Projects = () => {
           </div>
         </div>
       )}
+
+      {/* Site Modal */}
+      <AnimatePresence>
+        {showSiteModal && selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowSiteModal(false);
+              setEditingSite(null);
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-lg max-w-md w-full p-6"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {editingSite ? 'Edit Site' : 'Add Site'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowSiteModal(false);
+                    setEditingSite(null);
+                  }}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">Project: {selectedProject.name}</p>
+              <form onSubmit={handleSiteSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Site Name</label>
+                  <input
+                    type="text"
+                    value={siteFormData.name}
+                    onChange={(e) => setSiteFormData({ ...siteFormData, name: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <textarea
+                    value={siteFormData.address}
+                    onChange={(e) => setSiteFormData({ ...siteFormData, address: e.target.value })}
+                    rows={2}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Supervisor</label>
+                  <select
+                    value={siteFormData.supervisor_id}
+                    onChange={(e) => setSiteFormData({ ...siteFormData, supervisor_id: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Supervisor</option>
+                    {supervisors.map((supervisor) => (
+                      <option key={supervisor.id} value={supervisor.id}>
+                        {supervisor.first_name} {supervisor.last_name} ({supervisor.role})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={siteFormData.status}
+                    onChange={(e) => setSiteFormData({ ...siteFormData, status: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                  >
+                    {editingSite ? 'Update' : 'Create'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSiteModal(false);
+                      setEditingSite(null);
+                    }}
+                    className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
