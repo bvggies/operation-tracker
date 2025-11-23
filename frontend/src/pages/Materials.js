@@ -320,7 +320,7 @@ const Materials = () => {
           showSupplier={false}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 
