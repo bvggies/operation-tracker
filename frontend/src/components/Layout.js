@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import SafeMotion from '../utils/motion';
-import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
 import {
   FiHome,
   FiUsers,
@@ -20,16 +18,6 @@ import {
   FiShield,
 } from 'react-icons/fi';
 
-// Ensure motion components are always valid
-const motion = {
-  div: SafeMotion.div || 'div',
-  aside: SafeMotion.aside || 'aside',
-  li: SafeMotion.li || 'li',
-  button: SafeMotion.button || 'button',
-  span: SafeMotion.span || 'span',
-  tr: SafeMotion.tr || 'tr',
-};
-const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Layout = ({ children }) => {
   const { user, logout, isAdmin, isManager, isSupervisor } = useAuth();
@@ -98,13 +86,10 @@ const Layout = ({ children }) => {
 
       <div className="flex">
         {/* Sidebar */}
-        <motion.aside
-          initial={false}
-          animate={{
-            x: isDesktop ? 0 : (sidebarOpen ? 0 : -256),
-          }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg"
+        <aside
+          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transition-transform duration-300 ${
+            isDesktop ? '' : (sidebarOpen ? 'translate-x-0' : '-translate-x-full')
+          }`}
         >
           <div className="h-full flex flex-col">
             {/* Logo */}
@@ -124,12 +109,7 @@ const Layout = ({ children }) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
                     return (
-                      <motion.li
-                        key={item.path || index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
+                      <li key={item.path || index}>
                         <Link
                           to={item.path || '/dashboard'}
                           onClick={() => setSidebarOpen(false)}
@@ -142,7 +122,7 @@ const Layout = ({ children }) => {
                           {Icon ? <Icon size={20} /> : null}
                           <span>{item.label || 'Menu'}</span>
                         </Link>
-                      </motion.li>
+                      </li>
                     );
                   })
                 ) : (
@@ -178,7 +158,7 @@ const Layout = ({ children }) => {
               </div>
             ) : null}
           </div>
-        </motion.aside>
+        </aside>
 
         {/* Overlay for mobile */}
         {sidebarOpen ? (

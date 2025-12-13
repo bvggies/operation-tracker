@@ -3,19 +3,6 @@ import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit, FiCheck, FiClock } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import SafeMotion from '../utils/motion';
-import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
-
-// Ensure motion components are always valid
-const motion = {
-  div: SafeMotion.div || 'div',
-  aside: SafeMotion.aside || 'aside',
-  li: SafeMotion.li || 'li',
-  button: SafeMotion.button || 'button',
-  span: SafeMotion.span || 'span',
-  tr: SafeMotion.tr || 'tr',
-};
-const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Tasks = () => {
   const { user } = useAuth();
@@ -163,18 +150,8 @@ const Tasks = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="flex items-center justify-between"
-      >
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
           <p className="text-gray-600 mt-1">Manage and track tasks</p>
@@ -188,18 +165,14 @@ const Tasks = () => {
           <span>New Task</span>
         </button>
         ) : null}
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         {tasks && Array.isArray(tasks) && tasks.length > 0 ? (
           tasks.map((task, index) => (
             task ? (
-          <motion.div
+          <div
             key={task.id || index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 + index * 0.05 }}
-            whileHover={{ x: 5, transition: { duration: 0.2 } }}
             className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">
@@ -244,7 +217,7 @@ const Tasks = () => {
                 </button>
               ) : null}
             </div>
-          </motion.div>
+          </div>
             ) : null
           ))
         ) : (
@@ -254,22 +227,15 @@ const Tasks = () => {
         )}
       </div>
 
-      <AnimatePresence mode="wait">
-        {showModal ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowModal(false)}
+      {showModal ? (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
-            >
             <h2 className="text-2xl font-bold text-gray-900 mb-4">New Task</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -363,30 +329,22 @@ const Tasks = () => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
-        ) : null}
-      </AnimatePresence>
+          </div>
+        </div>
+      ) : null}
 
-      <AnimatePresence mode="wait">
-        {showUpdateModal && selectedTask ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => {
-              setShowUpdateModal(false);
-              setSelectedTask(null);
-            }}
+      {showUpdateModal && selectedTask ? (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setShowUpdateModal(false);
+            setSelectedTask(null);
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-lg max-w-2xl w-full p-6"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-lg max-w-2xl w-full p-6"
-            >
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Update Task</h2>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
@@ -444,11 +402,10 @@ const Tasks = () => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </motion.div>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 };
 

@@ -2,16 +2,6 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiPackage, FiAlertCircle } from 'react-icons/fi';
-import SafeMotion from '../utils/motion';
-// Ensure motion components are always valid
-const motion = {
-  div: SafeMotion.div || 'div',
-  aside: SafeMotion.aside || 'aside',
-  li: SafeMotion.li || 'li',
-  button: SafeMotion.button || 'button',
-  span: SafeMotion.span || 'span',
-  tr: SafeMotion.tr || 'tr',
-};
 
 const Materials = () => {
   const [inventory, setInventory] = useState([]);
@@ -168,58 +158,38 @@ const Materials = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="flex items-center justify-between"
-      >
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Materials</h1>
           <p className="text-gray-600 mt-1">Track material inventory and usage</p>
         </div>
         <div className="flex space-x-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setShowDeliveryModal(true)}
             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
           >
             <FiPlus />
             <span>Record Delivery</span>
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          </button>
+          <button
             onClick={() => setShowUsageModal(true)}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             <FiPackage />
             <span>Record Usage</span>
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          </button>
+          <button
             onClick={() => setShowRequisitionModal(true)}
             className="flex items-center space-x-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
           >
             <FiPlus />
             <span>Request Material</span>
-          </motion.button>
+          </button>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Site</label>
         {sitesLoading ? (
           <div className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 animate-pulse">
@@ -240,28 +210,20 @@ const Materials = () => {
         ) : (
           <p className="text-gray-500">No sites available. Please add sites to projects first.</p>
         )}
-      </motion.div>
+      </div>
 
       {loading ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex items-center justify-center h-64"
-        >
+        <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading inventory...</p>
           </div>
-        </motion.div>
+        </div>
       ) : inventory.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {inventory.map((item, index) => (
-            <motion.div
+            <div
               key={item.id || index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
               className={`bg-white rounded-lg shadow-sm p-6 ${
                 parseFloat(item.quantity || 0) <= parseFloat(item.min_threshold || 0)
                   ? 'border-2 border-red-300'
@@ -293,17 +255,13 @@ const Materials = () => {
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white rounded-lg shadow-sm p-12 text-center"
-        >
+        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
           <p className="text-gray-500">No inventory data available</p>
-        </motion.div>
+        </div>
       )}
 
       {/* Delivery Modal */}
@@ -344,23 +302,17 @@ const Materials = () => {
           showSupplier={false}
         />
       ) : null}
-    </motion.div>
+    </div>
   );
 };
 
 const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, showSupplier }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
+      <div
         onClick={(e) => e.stopPropagation()}
         className="bg-white rounded-lg max-w-md w-full p-6"
       >
@@ -430,8 +382,8 @@ const Modal = ({ title, onClose, onSubmit, formData, setFormData, materials, sho
             </button>
           </div>
         </form>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

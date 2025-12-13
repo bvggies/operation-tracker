@@ -11,7 +11,6 @@ import {
   FiTrendingUp,
   FiAlertCircle,
 } from 'react-icons/fi';
-import SafeMotion from '../utils/motion';
 // Recharts imports - commented out for now to avoid errors
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
@@ -115,24 +114,12 @@ const Dashboard = () => {
     );
   }
 
-  // Ensure MotionDiv is always a valid component
-  const MotionDiv = SafeMotion.div || 'div';
-
   return (
-    <MotionDiv
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <MotionDiv
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
+    <div className="space-y-6">
+      <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-1">Overview of your operations</p>
-      </MotionDiv>
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -141,13 +128,7 @@ const Dashboard = () => {
             if (!stat || !stat.icon || typeof stat.icon !== 'function') return null;
             const Icon = stat.icon;
             return (
-              <MotionDiv
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.1 }}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
+              <div key={index}>
                 <Link
                   to={stat.link || '/dashboard'}
                   className="block bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
@@ -162,7 +143,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </Link>
-              </MotionDiv>
+              </div>
             );
           })
         ) : (
@@ -172,12 +153,7 @@ const Dashboard = () => {
 
       {/* Recent Tasks */}
       {stats?.recentTasks && Array.isArray(stats.recentTasks) && stats.recentTasks.length > 0 ? (
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-lg shadow-sm p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">Recent Tasks</h2>
             <Link to="/tasks" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -187,11 +163,8 @@ const Dashboard = () => {
           <div className="space-y-3">
             {stats.recentTasks.map((task, index) => (
               task ? (
-                <MotionDiv
+                <div
                   key={task.id || index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + index * 0.05 }}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <div>
@@ -209,30 +182,22 @@ const Dashboard = () => {
                   >
                     {task.status ? task.status.replace('_', ' ') : 'Unknown'}
                   </span>
-                </MotionDiv>
+                </div>
               ) : null
             ))}
           </div>
-        </MotionDiv>
+        </div>
       ) : null}
 
       {/* Recent Activities */}
       {stats?.recentActivities && Array.isArray(stats.recentActivities) && stats.recentActivities.length > 0 ? (
-        <MotionDiv
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white rounded-lg shadow-sm p-6"
-        >
+        <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activities</h2>
           <div className="space-y-3">
             {stats.recentActivities.map((activity, index) => (
               activity ? (
-                <MotionDiv
+                <div
                   key={activity.id || index}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + index * 0.05 }}
                   className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <FiTrendingUp className="text-blue-600 mt-1" />
@@ -242,13 +207,13 @@ const Dashboard = () => {
                       {activity.user_name || 'Unknown'} • {activity.site_name || 'No site'} • {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : 'Unknown date'}
                     </p>
                   </div>
-                </MotionDiv>
+                </div>
               ) : null
             ))}
           </div>
-        </MotionDiv>
+        </div>
       ) : null}
-    </MotionDiv>
+    </div>
   );
 };
 

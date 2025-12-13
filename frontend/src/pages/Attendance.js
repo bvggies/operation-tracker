@@ -3,16 +3,6 @@ import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiClock, FiCheck, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import SafeMotion from '../utils/motion';
-// Ensure motion components are always valid
-const motion = {
-  div: SafeMotion.div || 'div',
-  aside: SafeMotion.aside || 'aside',
-  li: SafeMotion.li || 'li',
-  button: SafeMotion.button || 'button',
-  span: SafeMotion.span || 'span',
-  tr: SafeMotion.tr || 'tr',
-};
 
 const Attendance = () => {
   const { user } = useAuth();
@@ -128,51 +118,33 @@ const Attendance = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="flex items-center justify-between"
-      >
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Attendance</h1>
           <p className="text-gray-600 mt-1">Track worker attendance</p>
         </div>
         {user?.role === 'worker' ? (
           <div className="flex space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={handleClockIn}
               className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
             >
               <FiClock />
               <span>Clock In</span>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </button>
+            <button
               onClick={handleClockOut}
               className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
             >
               <FiClock />
               <span>Clock Out</span>
-            </motion.button>
+            </button>
           </div>
         ) : null}
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Select Site</label>
         {sitesLoading ? (
           <div className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 animate-pulse">
@@ -193,27 +165,18 @@ const Attendance = () => {
         ) : (
           <p className="text-gray-500">No sites available. Please add sites to projects first.</p>
         )}
-      </motion.div>
+      </div>
 
       {loading ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex items-center justify-center h-64"
-        >
+        <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading attendance...</p>
           </div>
-        </motion.div>
+        </div>
       ) : (
         attendance.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white rounded-lg shadow-sm overflow-hidden"
-          >
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -228,11 +191,8 @@ const Attendance = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {attendance.map((record, index) => (
-                    <motion.tr
+                    <tr
                       key={record.id || index}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
                       className="hover:bg-gray-50"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -249,23 +209,19 @@ const Attendance = () => {
                           {record.status ? record.status.replace('_', ' ') : '-'}
                         </span>
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-white rounded-lg shadow-sm p-12 text-center"
-          >
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <p className="text-gray-500">No attendance records found</p>
-          </motion.div>
+          </div>
         )
       )}
-    </motion.div>
+    </div>
   );
 };
 
