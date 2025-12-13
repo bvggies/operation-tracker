@@ -88,22 +88,33 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const isAdmin = () => user?.role === 'admin';
-  const isManager = () => ['admin', 'manager'].includes(user?.role);
-  const isSupervisor = () => ['admin', 'manager', 'supervisor'].includes(user?.role);
+  const isAdmin = () => {
+    if (!user || !user.role) return false;
+    return user.role === 'admin';
+  };
+  
+  const isManager = () => {
+    if (!user || !user.role) return false;
+    return ['admin', 'manager'].includes(user.role);
+  };
+  
+  const isSupervisor = () => {
+    if (!user || !user.role) return false;
+    return ['admin', 'manager', 'supervisor'].includes(user.role);
+  };
+
+  const contextValue = {
+    user,
+    login,
+    logout,
+    loading,
+    isAdmin,
+    isManager,
+    isSupervisor,
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        loading,
-        isAdmin,
-        isManager,
-        isSupervisor,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

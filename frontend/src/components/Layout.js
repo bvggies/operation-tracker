@@ -61,7 +61,11 @@ const Layout = ({ children }) => {
       { path: '/audit', icon: FiShield, label: 'Audit Logs', roles: ['admin', 'manager'] },
     ];
     
-    return allItems.filter(item => item.roles.includes(user.role));
+    return allItems.filter(item => {
+      if (!item || !item.icon || typeof item.icon !== 'function') return false;
+      if (!item.roles || !Array.isArray(item.roles)) return false;
+      return item.roles.includes(user.role);
+    });
   }, [user]);
 
   return (

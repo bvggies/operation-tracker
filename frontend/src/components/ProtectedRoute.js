@@ -32,6 +32,15 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     );
   }
 
+  // Ensure children is a valid React element
+  if (typeof children === 'undefined' || children === null) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500">Invalid content</p>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../config/api';
 import {
@@ -64,50 +64,53 @@ const Dashboard = () => {
     );
   }
 
-  const statCards = [
-    {
-      title: 'Active Projects',
-      value: stats?.activeProjects || 0,
-      icon: FiFolder,
-      color: 'bg-blue-500',
-      link: '/projects',
-    },
-    {
-      title: 'Active Sites',
-      value: stats?.activeSites || 0,
-      icon: FiMapPin,
-      color: 'bg-green-500',
-      link: '/projects',
-    },
-    {
-      title: 'Pending Tasks',
-      value: stats?.pendingTasks || 0,
-      icon: FiCheckSquare,
-      color: 'bg-yellow-500',
-      link: '/tasks',
-    },
-    {
-      title: "Today's Attendance",
-      value: stats?.todayAttendance || 0,
-      icon: FiUsers,
-      color: 'bg-purple-500',
-      link: '/attendance',
-    },
-    {
-      title: 'Equipment in Maintenance',
-      value: stats?.equipmentInMaintenance || 0,
-      icon: FiSettings,
-      color: 'bg-orange-500',
-      link: '/equipment',
-    },
-    {
-      title: 'Low Stock Materials',
-      value: stats?.lowStockMaterials || 0,
-      icon: FiPackage,
-      color: 'bg-red-500',
-      link: '/materials',
-    },
-  ];
+  const statCards = useMemo(() => {
+    if (!stats) return [];
+    return [
+      {
+        title: 'Active Projects',
+        value: stats?.activeProjects || 0,
+        icon: FiFolder,
+        color: 'bg-blue-500',
+        link: '/projects',
+      },
+      {
+        title: 'Active Sites',
+        value: stats?.activeSites || 0,
+        icon: FiMapPin,
+        color: 'bg-green-500',
+        link: '/projects',
+      },
+      {
+        title: 'Pending Tasks',
+        value: stats?.pendingTasks || 0,
+        icon: FiCheckSquare,
+        color: 'bg-yellow-500',
+        link: '/tasks',
+      },
+      {
+        title: "Today's Attendance",
+        value: stats?.todayAttendance || 0,
+        icon: FiUsers,
+        color: 'bg-purple-500',
+        link: '/attendance',
+      },
+      {
+        title: 'Equipment in Maintenance',
+        value: stats?.equipmentInMaintenance || 0,
+        icon: FiSettings,
+        color: 'bg-orange-500',
+        link: '/equipment',
+      },
+      {
+        title: 'Low Stock Materials',
+        value: stats?.lowStockMaterials || 0,
+        icon: FiPackage,
+        color: 'bg-red-500',
+        link: '/materials',
+      },
+    ].filter(card => card && card.icon && typeof card.icon === 'function');
+  }, [stats]);
 
   return (
     <motion.div
