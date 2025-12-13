@@ -113,21 +113,28 @@ const Dashboard = () => {
     );
   }
 
+  // Create safe motion component wrapper
+  const MotionDiv = (motion && typeof motion.div === 'function') ? motion.div : 'div';
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <MotionDiv
+      {...(motion && motion.div ? {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.3 }
+      } : {})}
       className="space-y-6"
     >
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
+      <MotionDiv
+        {...(motion && motion.div ? {
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
+          transition: { delay: 0.1 }
+        } : {})}
       >
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-1">Overview of your operations</p>
-      </motion.div>
+      </MotionDiv>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -243,7 +250,7 @@ const Dashboard = () => {
           </div>
         </motion.div>
       ) : null}
-    </motion.div>
+    </MotionDiv>
   );
 };
 
