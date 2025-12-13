@@ -4,7 +4,15 @@ import { toast } from 'react-toastify';
 import { FiClock, FiCheck, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import SafeMotion from '../utils/motion';
-const motion = SafeMotion;
+// Ensure motion components are always valid
+const motion = {
+  div: SafeMotion.div || 'div',
+  aside: SafeMotion.aside || 'aside',
+  li: SafeMotion.li || 'li',
+  button: SafeMotion.button || 'button',
+  span: SafeMotion.span || 'span',
+  tr: SafeMotion.tr || 'tr',
+};
 
 const Attendance = () => {
   const { user } = useAuth();

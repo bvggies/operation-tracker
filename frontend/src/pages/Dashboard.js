@@ -115,7 +115,8 @@ const Dashboard = () => {
     );
   }
 
-  const MotionDiv = SafeMotion.div;
+  // Ensure MotionDiv is always a valid component
+  const MotionDiv = SafeMotion.div || 'div';
 
   return (
     <MotionDiv

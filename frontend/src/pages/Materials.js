@@ -3,7 +3,15 @@ import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiPackage, FiAlertCircle } from 'react-icons/fi';
 import SafeMotion from '../utils/motion';
-const motion = SafeMotion;
+// Ensure motion components are always valid
+const motion = {
+  div: SafeMotion.div || 'div',
+  aside: SafeMotion.aside || 'aside',
+  li: SafeMotion.li || 'li',
+  button: SafeMotion.button || 'button',
+  span: SafeMotion.span || 'span',
+  tr: SafeMotion.tr || 'tr',
+};
 
 const Materials = () => {
   const [inventory, setInventory] = useState([]);

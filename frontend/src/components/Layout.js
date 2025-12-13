@@ -20,7 +20,15 @@ import {
   FiShield,
 } from 'react-icons/fi';
 
-const motion = SafeMotion;
+// Ensure motion components are always valid
+const motion = {
+  div: SafeMotion.div || 'div',
+  aside: SafeMotion.aside || 'aside',
+  li: SafeMotion.li || 'li',
+  button: SafeMotion.button || 'button',
+  span: SafeMotion.span || 'span',
+  tr: SafeMotion.tr || 'tr',
+};
 const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Layout = ({ children }) => {

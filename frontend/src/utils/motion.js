@@ -1,24 +1,33 @@
-import { motion as framerMotion } from 'framer-motion';
+import React from 'react';
 
-// Create safe motion components that fallback to regular HTML elements if motion is undefined
-let SafeMotion = {
-  div: 'div',
-  aside: 'aside',
-  li: 'li',
-  button: 'button',
-  span: 'span',
+let framerMotion;
+try {
+  framerMotion = require('framer-motion').motion;
+} catch (e) {
+  framerMotion = null;
+}
+
+// Create wrapper components that always return valid React elements
+const createSafeComponent = (tagName) => {
+  if (framerMotion && framerMotion[tagName] && typeof framerMotion[tagName] === 'function') {
+    return framerMotion[tagName];
+  }
+  // Return a React component that renders the HTML element
+  return React.forwardRef((props, ref) => {
+    const { initial, animate, transition, whileHover, ...rest } = props;
+    return React.createElement(tagName, { ...rest, ref });
+  });
 };
 
-// Check if framer-motion is available and create safe wrappers
-if (framerMotion && typeof framerMotion.div === 'function') {
-  SafeMotion = {
-    div: framerMotion.div,
-    aside: framerMotion.aside,
-    li: framerMotion.li,
-    button: framerMotion.button,
-    span: framerMotion.span,
-  };
-}
+// Create safe motion components that fallback to regular HTML elements if motion is undefined
+const SafeMotion = {
+  div: createSafeComponent('div'),
+  aside: createSafeComponent('aside'),
+  li: createSafeComponent('li'),
+  button: createSafeComponent('button'),
+  span: createSafeComponent('span'),
+  tr: createSafeComponent('tr'),
+};
 
 // Helper to get motion props if motion is available
 export const getMotionProps = (props) => {
