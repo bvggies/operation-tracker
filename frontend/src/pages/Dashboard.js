@@ -11,7 +11,7 @@ import {
   FiTrendingUp,
   FiAlertCircle,
 } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import SafeMotion from '../utils/motion';
 // Recharts imports - commented out for now to avoid errors
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
@@ -113,24 +113,19 @@ const Dashboard = () => {
     );
   }
 
-  // Create safe motion component wrapper
-  const MotionDiv = (motion && typeof motion.div === 'function') ? motion.div : 'div';
+  const MotionDiv = SafeMotion.div;
 
   return (
     <MotionDiv
-      {...(motion && motion.div ? {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.3 }
-      } : {})}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className="space-y-6"
     >
       <MotionDiv
-        {...(motion && motion.div ? {
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { delay: 0.1 }
-        } : {})}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
       >
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600 mt-1">Overview of your operations</p>
@@ -143,7 +138,7 @@ const Dashboard = () => {
             if (!stat || !stat.icon || typeof stat.icon !== 'function') return null;
             const Icon = stat.icon;
             return (
-              <motion.div
+              <MotionDiv
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -164,7 +159,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              </MotionDiv>
             );
           })
         ) : (
@@ -174,7 +169,7 @@ const Dashboard = () => {
 
       {/* Recent Tasks */}
       {stats?.recentTasks && Array.isArray(stats.recentTasks) && stats.recentTasks.length > 0 ? (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -189,7 +184,7 @@ const Dashboard = () => {
           <div className="space-y-3">
             {stats.recentTasks.map((task, index) => (
               task ? (
-                <motion.div
+                <MotionDiv
                   key={task.id || index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -211,16 +206,16 @@ const Dashboard = () => {
                   >
                     {task.status ? task.status.replace('_', ' ') : 'Unknown'}
                   </span>
-                </motion.div>
+                </MotionDiv>
               ) : null
             ))}
           </div>
-        </motion.div>
+        </MotionDiv>
       ) : null}
 
       {/* Recent Activities */}
       {stats?.recentActivities && Array.isArray(stats.recentActivities) && stats.recentActivities.length > 0 ? (
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
@@ -230,7 +225,7 @@ const Dashboard = () => {
           <div className="space-y-3">
             {stats.recentActivities.map((activity, index) => (
               activity ? (
-                <motion.div
+                <MotionDiv
                   key={activity.id || index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -244,11 +239,11 @@ const Dashboard = () => {
                       {activity.user_name || 'Unknown'} • {activity.site_name || 'No site'} • {activity.created_at ? new Date(activity.created_at).toLocaleDateString() : 'Unknown date'}
                     </p>
                   </div>
-                </motion.div>
+                </MotionDiv>
               ) : null
             ))}
           </div>
-        </motion.div>
+        </MotionDiv>
       ) : null}
     </MotionDiv>
   );
