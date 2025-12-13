@@ -31,15 +31,27 @@ const Projects = () => {
   });
 
   useEffect(() => {
-    if (user && isAdmin && isManager && selectedProject && (isAdmin() || isManager())) {
-      fetchSites(selectedProject.id);
+    if (user && selectedProject && selectedProject.id && typeof isAdmin === 'function' && typeof isManager === 'function') {
+      try {
+        if (isAdmin() || isManager()) {
+          fetchSites(selectedProject.id);
+        }
+      } catch (error) {
+        console.error('Error checking permissions:', error);
+      }
     }
   }, [selectedProject, user, isAdmin, isManager]);
 
   useEffect(() => {
     fetchProjects();
-    if (user && isAdmin && isManager && (isAdmin() || isManager())) {
-      fetchSupervisors();
+    if (user && typeof isAdmin === 'function' && typeof isManager === 'function') {
+      try {
+        if (isAdmin() || isManager()) {
+          fetchSupervisors();
+        }
+      } catch (error) {
+        console.error('Error checking permissions:', error);
+      }
     }
   }, [user, isAdmin, isManager]);
 
@@ -246,7 +258,7 @@ const Projects = () => {
           <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
           <p className="text-gray-600 mt-1">Manage construction projects and sites</p>
         </div>
-        {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
+        {user && typeof isAdmin === 'function' && typeof isManager === 'function' && (isAdmin() || isManager()) ? (
           <button
             onClick={() => {
               setEditingProject(null);
@@ -284,7 +296,7 @@ const Projects = () => {
                 </span>
               </div>
               <div className="flex space-x-2">
-                {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
+                {user && typeof isAdmin === 'function' && typeof isManager === 'function' && (isAdmin() || isManager()) ? (
                   <>
                     <button
                       onClick={() => handleAddSite(project)}
@@ -318,7 +330,7 @@ const Projects = () => {
                 <FiUsers className="mr-2" />
                 {project.site_count || 0} sites
               </div>
-              {user && isAdmin && isManager && (isAdmin() || isManager()) ? (
+              {user && typeof isAdmin === 'function' && typeof isManager === 'function' && (isAdmin() || isManager()) ? (
                 <button
                   onClick={() => {
                     setSelectedProject(project);
@@ -343,7 +355,7 @@ const Projects = () => {
                             <p className="text-xs text-gray-500">{site.address}</p>
                           ) : null}
                         </div>
-                        {user && isAdmin && isManager && site && (isAdmin() || isManager()) ? (
+                        {user && site && typeof isAdmin === 'function' && typeof isManager === 'function' && (isAdmin() || isManager()) ? (
                           <button
                             onClick={() => handleEditSite(site)}
                             className="p-1 text-gray-600 hover:bg-gray-200 rounded"
