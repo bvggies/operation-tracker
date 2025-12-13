@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiPackage, FiAlertCircle } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import SafeMotion from '../utils/motion';
+const motion = SafeMotion;
 
 const Materials = () => {
   const [inventory, setInventory] = useState([]);
@@ -63,8 +64,9 @@ const Materials = () => {
       
       // Fallback to fetching by project
       const response = await api.get('/projects');
+      const projectsData = Array.isArray(response?.data) ? response.data : [];
       const allSites = [];
-      for (const project of response.data || []) {
+      for (const project of projectsData) {
         try {
           const sitesResponse = await api.get(`/projects/${project.id}/sites`);
           if (sitesResponse.data && sitesResponse.data.length > 0) {

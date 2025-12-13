@@ -18,7 +18,8 @@ const Notifications = () => {
   const fetchNotifications = async () => {
     try {
       const response = await api.get('/notifications');
-      setNotifications(response.data);
+      const notificationsData = Array.isArray(response?.data) ? response.data : [];
+      setNotifications(notificationsData);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -29,7 +30,7 @@ const Notifications = () => {
   const fetchUnreadCount = async () => {
     try {
       const response = await api.get('/notifications/unread-count');
-      setUnreadCount(response.data.count);
+      setUnreadCount(response?.data?.count || 0);
     } catch (error) {
       console.error('Error fetching unread count:', error);
     }

@@ -3,7 +3,11 @@ import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit, FiCheck, FiClock } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import SafeMotion from '../utils/motion';
+import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
+
+const motion = SafeMotion;
+const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Tasks = () => {
   const { user } = useAuth();
@@ -53,10 +57,13 @@ const Tasks = () => {
   const fetchSites = async () => {
     try {
       const response = await api.get('/projects');
+      const projectsData = Array.isArray(response?.data) ? response.data : [];
       const allSites = [];
-      for (const project of response.data) {
+      for (const project of projectsData) {
         const sitesResponse = await api.get(`/projects/${project.id}/sites`);
-        allSites.push(...sitesResponse.data);
+        if (sitesResponse?.data && Array.isArray(sitesResponse.data)) {
+          allSites.push(...sitesResponse.data);
+        }
       }
       setSites(allSites);
     } catch (error) {
@@ -67,7 +74,8 @@ const Tasks = () => {
   const fetchWorkers = async () => {
     try {
       const response = await api.get('/users');
-      setWorkers(response.data.filter((u) => u.role === 'worker' && u.is_active));
+      const usersData = Array.isArray(response?.data) ? response.data : [];
+      setWorkers(usersData.filter((u) => u && u.role === 'worker' && u.is_active));
     } catch (error) {
       console.error('Error fetching workers:', error);
     }

@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import api from '../config/api';
 import { toast } from 'react-toastify';
 import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiUsers, FiX } from 'react-icons/fi';
-import { motion, AnimatePresence } from 'framer-motion';
+import SafeMotion from '../utils/motion';
+import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+
+const motion = SafeMotion;
+const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Projects = () => {
   const { user, isAdmin, isManager } = useAuth();

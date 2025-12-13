@@ -1,17 +1,28 @@
-import { motion } from 'framer-motion';
+import { motion as framerMotion } from 'framer-motion';
 
 // Create safe motion components that fallback to regular HTML elements if motion is undefined
-export const SafeMotion = {
-  div: (motion && typeof motion.div === 'function') ? motion.div : 'div',
-  aside: (motion && typeof motion.aside === 'function') ? motion.aside : 'aside',
-  li: (motion && typeof motion.li === 'function') ? motion.li : 'li',
-  button: (motion && typeof motion.button === 'function') ? motion.button : 'button',
-  span: (motion && typeof motion.span === 'function') ? motion.span : 'span',
+let SafeMotion = {
+  div: 'div',
+  aside: 'aside',
+  li: 'li',
+  button: 'button',
+  span: 'span',
 };
+
+// Check if framer-motion is available and create safe wrappers
+if (framerMotion && typeof framerMotion.div === 'function') {
+  SafeMotion = {
+    div: framerMotion.div,
+    aside: framerMotion.aside,
+    li: framerMotion.li,
+    button: framerMotion.button,
+    span: framerMotion.span,
+  };
+}
 
 // Helper to get motion props if motion is available
 export const getMotionProps = (props) => {
-  if (!motion || typeof motion.div !== 'function') {
+  if (!framerMotion || typeof framerMotion.div !== 'function') {
     return {};
   }
   return props;

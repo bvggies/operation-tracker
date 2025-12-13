@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import SafeMotion from '../utils/motion';
+import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
 import {
   FiHome,
   FiUsers,
@@ -18,6 +19,9 @@ import {
   FiFileText,
   FiShield,
 } from 'react-icons/fi';
+
+const motion = SafeMotion;
+const AnimatePresence = FramerAnimatePresence || (({ children }) => <>{children}</>);
 
 const Layout = ({ children }) => {
   const { user, logout, isAdmin, isManager, isSupervisor } = useAuth();

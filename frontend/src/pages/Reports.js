@@ -21,12 +21,16 @@ const Reports = () => {
         api.get('/reports/attendance'),
         api.get('/reports/equipment-status'),
       ]);
-      setProgressData(progress.data);
-      setMaterialUsage(materials.data);
-      setAttendanceData(attendance.data);
-      setEquipmentStatus(equipment.data);
+      setProgressData(Array.isArray(progress?.data) ? progress.data : []);
+      setMaterialUsage(Array.isArray(materials?.data) ? materials.data : []);
+      setAttendanceData(Array.isArray(attendance?.data) ? attendance.data : []);
+      setEquipmentStatus(Array.isArray(equipment?.data) ? equipment.data : []);
     } catch (error) {
       console.error('Error fetching reports:', error);
+      setProgressData([]);
+      setMaterialUsage([]);
+      setAttendanceData([]);
+      setEquipmentStatus([]);
     } finally {
       setLoading(false);
     }

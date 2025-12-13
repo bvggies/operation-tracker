@@ -22,7 +22,8 @@ const Equipment = () => {
   const fetchEquipment = async () => {
     try {
       const response = await api.get('/equipment');
-      setEquipment(response.data);
+      const equipmentData = Array.isArray(response?.data) ? response.data : [];
+      setEquipment(equipmentData);
     } catch (error) {
       toast.error('Failed to fetch equipment');
     } finally {

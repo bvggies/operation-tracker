@@ -23,7 +23,8 @@ const Documents = () => {
   const fetchDocuments = async () => {
     try {
       const response = await api.get('/documents');
-      setDocuments(response.data);
+      const documentsData = Array.isArray(response?.data) ? response.data : [];
+      setDocuments(documentsData);
     } catch (error) {
       toast.error('Failed to fetch documents');
     } finally {
@@ -34,10 +35,18 @@ const Documents = () => {
   const fetchSites = async () => {
     try {
       const response = await api.get('/projects');
+      const projectsData = Array.isArray(response?.data) ? response.data : [];
       const allSites = [];
-      for (const project of response.data) {
-        const sitesResponse = await api.get(`/projects/${project.id}/sites`);
-        allSites.push(...sitesResponse.data);
+      for (const project of projectsData) {
+        if (!project || !project.id) continue;
+        try {
+          const sitesResponse = await api.get(`/projects/${project.id}/sites`);
+          if (sitesResponse?.data && Array.isArray(sitesResponse.data)) {
+            allSites.push(...sitesResponse.data);
+          }
+        } catch (error) {
+          console.error(`Error fetching sites for project ${project.id}:`, error);
+        }
       }
       setSites(allSites);
     } catch (error) {

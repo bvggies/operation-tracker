@@ -24,10 +24,12 @@ const Dashboard = () => {
     try {
       setError(null);
       const response = await api.get('/reports/dashboard');
-      setStats(response.data);
+      const statsData = response?.data || null;
+      setStats(statsData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setError(error.response?.data?.message || 'Failed to load dashboard data');
+      setStats(null);
     } finally {
       setLoading(false);
     }
