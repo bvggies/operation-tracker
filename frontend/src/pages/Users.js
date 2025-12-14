@@ -123,7 +123,7 @@ const Users = () => {
           <h1 className="text-3xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-600 mt-1">Manage user accounts</p>
         </div>
-        {isAdmin && isAdmin() ? (
+        {typeof isAdmin === 'function' && isAdmin() ? (
           <button
             onClick={() => {
               setEditingUser(null);
@@ -186,7 +186,7 @@ const Users = () => {
                     >
                       <FiEdit />
                     </button>
-                    {isAdmin && isAdmin() && user.is_active ? (
+                    {typeof isAdmin === 'function' && isAdmin() && user.is_active ? (
                       <button
                         onClick={() => handleDeactivate(user.id)}
                         className="text-red-600 hover:text-red-900"
@@ -264,7 +264,7 @@ const Users = () => {
                   <option value="worker">Worker</option>
                   <option value="supervisor">Supervisor</option>
                   <option value="manager">Manager</option>
-                  {isAdmin && isAdmin() ? <option value="admin">Admin</option> : null}
+                  {typeof isAdmin === 'function' && isAdmin() ? <option value="admin">Admin</option> : null}
                 </select>
               </div>
               <div>
